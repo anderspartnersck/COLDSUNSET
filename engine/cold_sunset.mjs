@@ -1,6 +1,6 @@
 // COLD SUNSET — the engine. Deterministic, seeded, node-runnable, no DOM.
-// An asymmetric hide-and-hunt: THE WALKER (one hidden veteran) vs THE LAW (the Chief + deputies + the K-9),
-// with the Colonel as an independent automa and, in the expansion (COLD SUNSET: WE'RE HERE TO HELP [P]),
+// An asymmetric hide-and-hunt: THE WALKER (one hidden veteran) vs THE LAW (the Sheriff + deputies + the K-9),
+// with VERNA, his sister, as an independent automa and, in the expansion (COLD SUNSET: WE'RE HERE TO HELP [P]),
 // MR. HELLER, the weather, the Nightmare deck, Psyche+, Ordnance+ and the Redacted Files.
 //
 // Every number is a knob in AS_WRITTEN (the source rules read literally, our defaults where they are silent)
@@ -25,25 +25,25 @@ export function makeRng(seed) {
 // smallest default and file a Q (docs/DESIGN.md §Q). TUNED: what the battery says makes a fair asymmetric game.
 export const AS_WRITTEN = {
   name: "AS WRITTEN",
-  walkerHP: 6, chiefHP: 6, otherHP: 5, healCap: 3,
+  walkerHP: 6, sheriffHP: 6, otherHP: 5, healCap: 3,
   walkerStart: { rage: 1, zen: 1, psyche: 3 },
-  nerve: { walker: 4, chief: 4, colonel: 4, hackett: 2, grimes: 5, pollard: 3, lisk: 3, heller: 3 },
+  nerve: { walker: 4, sheriff: 4, sister: 4, pruitt: 2, varner: 5, tolley: 3, crane: 3, heller: 3 },
   killRage: 4,             // Rage at which kill logic takes over (no WOUND; must FIRE at a hunter in his zone)
   coldAt: 6,               // Spiral at which the Cold Zone opens
   holdRounds: 2,           // rounds the Walker must hold the Cold Zone clean (expansion: 3)
   cleanZen: 2, cleanPsyche: 1,
-  spiralMax: 10, guardMax: 6, burialAt: 9,
+  spiralMax: 10, guardMax: 6, showdownAt: 9,
   setupTraps: 3, trapKits: 2, caches: 2,
   trapLive: [1, 2],        // Risk Roll faces that make traps live
   riskEscalate: [6],       // Risk Roll faces that raise the Guard (+1) — our default for "global pressure"
   hitSame: 3, hitAdj: 4,
   scanSame: 3, scanAdj: 4, // d6 a Law SCAN needs to find him in its own zone / the next   // d6 needed to hit a target in your zone / the next zone
-  whyAsk: 5,               // Why Ask succeeds on this or better
-  misreadOn: 4,            // with Rage >= killRage the Walker misreads the Colonel: this or better kills him
-  colonelArrive: 1,        // round the Colonel enters (2P text: he moves every round)
-  colonelMove: "d6",       // "d6" = 1d6 zones toward the Walker (as written); a number = fixed steps
-  colonelHidden: "COLD",   // where he heads when the Walker is hidden: "COLD" (as written) | "LASTSEEN"
-  colonelTalksAdjacent: false, // as written: Why Ask auto-triggers only when he ENTERS the Walker's zone
+  reachHim: 5,               // REACH HIM succeeds on this or better
+  misreadOn: 4,            // with Rage >= killRage the Walker misreads his sister coming: this or better kills her
+  sisterArrive: 1,        // round the Sister arrives (2P text: she moves every round)
+  sisterMove: "d6",       // "d6" = 1d6 zones toward the Walker (as written); a number = fixed steps
+  sisterHidden: "COLD",   // where she heads when the Walker is hidden: "COLD" (as written) | "LASTSEEN"
+  sisterTalksAdjacent: false, // as written: REACH HIM auto-triggers only when she ENTERS the Walker's zone
   clockEvery: 0,           // 0 = no Spiral clock (as written); N = Spiral +1 every N rounds in PRESSURE
   guardClockEvery: 0,      // 0 = no Guard clock; N = Guard +1 every N rounds
   townSightGuard: 1,       // Guard +1 when the Walker is sighted in a TOWN zone ("public escalation")
@@ -66,27 +66,27 @@ export const AS_WRITTEN = {
   talkAdjX: null,          // with the expansion: does voice range include the next zone? (null = same as core)
   overrideNeedsSight: false, // FINAL OVERRIDE needs Heller to know where he is (seen this round or last)
   // the dead-verb pass (1123, docs/VERBS-1123.md): each verb gets one payoff nothing else gives
-  walkerCallOut: "zen",    // the Walker's CALL OUT: "zen" (as written: Zen +1, seen) | "warning" (LAST WARNING: also Guard −1)
-  woundCarry: false,       // a WOUND: false (as written: they lose a round) | true (carried out: back to the station, and they lose a round)
+  walkerCallOut: "zen",    // the Walker's CALL OUT: "zen" (as written: Zen +1, seen) | "warning" (HOLLER: also Guard −1)
+  woundCarry: false,       // a WOUND: false (as written: they lose a round) | true (carried out: back to the county jail, and they lose a round)
   holdNeedsClear: false,   // the Cold Zone hold ticks only with no hunter standing in the Cold Zone (what a WOUND is for)
   lawRadio: "scan",        // the Law's CALL OUT: "scan" (as written: SCANs +1 this round) | "ground" (the chopper names the ground he's on)
   radioStealth: false,     // with "ground": a Walker who went to ground (STEALTH) that round isn't spotted by the chopper
   // the expansion rebalance (1123)
   hellerColdFree: false,   // Heller's aura (Zen −1 when seen) stops at the Cold Zone's edge
   cleanBeatsOverride: false, // Spiral 10: clean in the Cold Zone is checked BEFORE Heller's FINAL OVERRIDE (as written: after)
-  filesOnArrival: false,   // expansion, NOT used (too strong: Walker 52–77%): the Colonel digs for files from the day he lands
-  hellerScan: true,        // Heller's "+1 to officers' Risk Rolls" covers SCAN as well as FIRE (Q1576); measured: no effect either way
+  filesOnArrival: false,   // expansion, NOT used (too strong: Walker 52–77%): the Sister digs for files from the day she gets there
+  hellerScan: true,        // Heller's "+1 to deputies' Risk Rolls" covers SCAN as well as FIRE (Q1576); measured: no effect either way
   // 1124 rule switches (the build-up ladder, docs/LADDER-1124.md, and CORE10): every one is ON in AS_WRITTEN and TUNED.
   // Off = the rule isn't in the game at all (no option offered, no effect). walkerCallOut "none" / lawRadio "none" = no CALL OUT.
-  lawFire: true,           // the Law's FIRE (and Hackett's SNAP FIRE)
+  lawFire: true,           // the Law's FIRE (and Pruitt's SNAP FIRE)
   walkerFire: true,        // the Walker's FIRE (WOUND / KILL) and kill logic's forced shot
   ambush: true,            // the Law's STEALTH = hold an ambush
   walkerScan: true,        // the Walker's SCAN (listen: Zen +1, Rage −1)
   run: true,               // the Walker's RUN (two zones, loud)
   trauma: true,            // the Trauma deck (and every Trauma's Spiral +1)
-  faceoff: true,           // Spiral 10 with the Chief alive: the face-off (off: straight to THE NET CLOSES)
-  chiefKit: true,          // the Chief's pistol (Coiled Precision), DESPERATE and the weapon SWAP
-  deputyKit: true,         // the deputies' auras + abilities (Hackett, Grimes, Pollard + Deacon, Lisk): true | false | ["pollard", …]
+  faceoff: true,           // Spiral 10 with the Sheriff alive: the face-off (off: straight to THE NET CLOSES)
+  sheriffKit: true,          // the Sheriff's pistol (Coiled Precision), DESPERATE and the weapon SWAP
+  deputyKit: true,         // the deputies' auras + abilities (Pruitt, Varner, Tolley + Boone, Crane): true | false | ["tolley", …]
   walkerAura: true,        // the Walker's aura: shots at him from inside his own zone are −1
   bravery: true,           // LEGENDARY BRAVERY (once a game, up at 1 HP)
   rifle: true,             // the rifle at the hunter's camp (and dead deputies' rifles)
@@ -97,11 +97,11 @@ export const TUNED = {
   allDeputies: true,       // all four deputies are always on the board; extra players take them over (shared table control)
   clockEvery: 2,           // the sun goes down: Spiral +1 every 2nd round (L2: a provable terminus, ≤ 20 rounds)
   guardClockEvery: 0,
-  colonelArrive: 6,        // he gets there at sunset (the screenplay beat), not round 1
-  colonelMove: 1,          // he walks; he doesn't teleport
-  colonelHidden: "LASTSEEN", // he goes where the Walker was last seen, not to the Cold Zone to wait
-  colonelTalksAdjacent: true,  // voice range = same or next zone (the refined text)
-  whyAsk: 6,
+  sisterArrive: 6,        // she drives all night and gets there at sundown, not round 1
+  sisterMove: 1,          // she walks; she doesn't teleport
+  sisterHidden: "LASTSEEN", // she goes where the Walker was last seen, not to the Cold Zone to wait
+  sisterTalksAdjacent: true,  // voice range = same or next zone (the refined text)
+  reachHim: 6,
   hellerZenReset: "sighted",
   echoWho: "walker",
   riseDraw: "once",
@@ -115,8 +115,8 @@ export const TUNED = {
   roundCap: 30,
   callOutLimit: 1,         // the radio budget: 1117 was 2 (CALL-OUT spam rushed the Spiral); 1123: once, now the chopper names his ground
   // 1123 the dead-verb pass [PROPOSALS P1–P3, docs/DESIGN.md §7 + docs/VERBS-1123.md]
-  walkerCallOut: "warning", // P1 LAST WARNING: his CALL OUT also lowers the Guard by 1 — the only thing he can do to the Guard
-  woundCarry: true,        // P2 a WOUND carries the hunter out to the station …
+  walkerCallOut: "warning", // P1 HOLLER: his CALL OUT also lowers the Guard by 1 — the only thing he can do to the Guard
+  woundCarry: true,        // P2 a WOUND carries the hunter out to the county jail …
   holdNeedsClear: true,    // P2 … and the hold only ticks with no hunter in the Cold Zone: the wound is how he clears it, clean
   lawRadio: "ground",      // P3 the Law's CALL OUT: the chopper names the ground he's on (town / foothills / deep woods / Cold Zone)
   radioStealth: true,      // P3 … unless he went to ground that round
@@ -125,34 +125,34 @@ export const TUNED = {
   cleanBeatsOverride: true, // P5 at Spiral 10, clean in the Cold Zone beats FINAL OVERRIDE
 };
 // CORE10 (1124): the core in ten printed rules (docs/rules/CORE10.md), the stranger-table game. TUNED minus the rules the
-// build-up ladder and the removal test found don't pay (docs/LADDER-1124.md): caches, the rifle, the Chief's kit, the
-// Walker's aura + LEGENDARY BRAVERY, the mineshaft hazard, and Grimes's and Lisk's kits (they play as plain deputies).
-// Measured (6000 games, players 2–6): Walker 40.9 / Law 43.7 / Colonel 15.2 vs TUNED 40.5 / 45.1 / 14.3. Core only:
+// build-up ladder and the removal test found don't pay (docs/LADDER-1124.md): caches, the rifle, the Sheriff's kit, the
+// Walker's aura + LEGENDARY BRAVERY, the mineshaft hazard, and Varner's and Crane's kits (they play as plain deputies).
+// Measured (6000 games, players 2–6): Walker 40.9 / Law 43.7 / Sister 15.2 vs TUNED 40.5 / 45.1 / 14.3. Core only:
 // the expansion still layers on TUNED.
 export const CORE10 = {
   ...TUNED, name: "CORE 10",
-  caches: 0, rifle: false, chiefKit: false, walkerAura: false, bravery: false, shafts: false,
-  deputyKit: ["hackett", "pollard"],
+  caches: 0, rifle: false, sheriffKit: false, walkerAura: false, bravery: false, shafts: false,
+  deputyKit: ["pruitt", "tolley"],
 };
 export const PRESETS = { AS_WRITTEN, TUNED, CORE10 };
 
 // ---------------- THE BOARD: the Spiral Grid (14 zones + the Cold Zone) ----------------
-// Beats from the screenplay: town → the bridge → the draw → the bluff → the tall grass → the mine → the squeeze → out.
+// Tallow Gap, Merritt County, Tennessee, up onto the Cumberland Plateau: town → the creek → the bluffs → the bald → the old mine → the sink → out.
 export const ZONES = [
-  { id: "STATION", name: "THE STATION", tier: "TOWN", x: 2, y: 9 },
-  { id: "MAIN", name: "MAIN STREET", tier: "TOWN", x: 10, y: 9 },
-  { id: "BRIDGE", name: "THE BRIDGE", tier: "TOWN", x: 18, y: 9 },
-  { id: "POST", name: "ROUTE 9 POST", tier: "TOWN", x: 10, y: 12 },
-  { id: "BEND", name: "CUTTER'S BEND", tier: "FOOTHILLS", x: 26, y: 9 },
-  { id: "DRAW", name: "THE DRAW", tier: "FOOTHILLS", x: 34, y: 6 },
-  { id: "BLUFF", name: "THE BLUFF", tier: "FOOTHILLS", x: 42, y: 9 },
-  { id: "GRASS", name: "TALL GRASS", tier: "FOOTHILLS", x: 42, y: 3 },
-  { id: "VALLEY", name: "RIVER VALLEY", tier: "FOOTHILLS", x: 26, y: 12 },
-  { id: "RAVINE", name: "THE RAVINE", tier: "DEEP", x: 42, y: 12 },
-  { id: "MINE", name: "THE MINE", tier: "DEEP", x: 50, y: 3 },
-  { id: "SQUEEZE", name: "THE SQUEEZE", tier: "DEEP", x: 58, y: 6 },
-  { id: "TRAIL", name: "GAME TRAIL", tier: "DEEP", x: 50, y: 6 },
-  { id: "RIDGE", name: "THE RIDGE", tier: "DEEP", x: 50, y: 12 },
+  { id: "STATION", name: "COUNTY JAIL", tier: "TOWN", x: 2, y: 9 },
+  { id: "MAIN", name: "THE SQUARE", tier: "TOWN", x: 10, y: 9 },
+  { id: "BRIDGE", name: "SLAB BRIDGE", tier: "TOWN", x: 18, y: 9 },
+  { id: "POST", name: "FEED STORE", tier: "TOWN", x: 10, y: 12 },
+  { id: "BEND", name: "SAWMILL BEND", tier: "FOOTHILLS", x: 26, y: 9 },
+  { id: "DRAW", name: "DEER CAMP", tier: "FOOTHILLS", x: 34, y: 6 },
+  { id: "BLUFF", name: "THE SANDROCK", tier: "FOOTHILLS", x: 42, y: 9 },
+  { id: "GRASS", name: "THE BALD", tier: "FOOTHILLS", x: 42, y: 3 },
+  { id: "VALLEY", name: "CREEK BOTTOM", tier: "FOOTHILLS", x: 26, y: 12 },
+  { id: "RAVINE", name: "THE GORGE", tier: "DEEP", x: 42, y: 12 },
+  { id: "MINE", name: "NO. 4 MINE", tier: "DEEP", x: 50, y: 3 },
+  { id: "SQUEEZE", name: "THE SINK", tier: "DEEP", x: 58, y: 6 },
+  { id: "TRAIL", name: "LOGGING ROAD", tier: "DEEP", x: 50, y: 6 },
+  { id: "RIDGE", name: "FIRE TOWER", tier: "DEEP", x: 50, y: 12 },
   { id: "COLD", name: "THE COLD ZONE", tier: "COLD", x: 58, y: 12 },
 ];
 export const ZONE = Object.fromEntries(ZONES.map(z => [z.id, z]));
@@ -176,33 +176,33 @@ export const OVERLAY = {
   icedBridge: ["BRIDGE"],                   // a full action to cross (cost 2)
   blockedCave: "SQUEEZE",                   // usable only after Spiral 7
   echo: ["VALLEY", "BLUFF"],                // ending a turn here: Guard +1
-  colonelPath: ["POST", "VALLEY", "BLUFF", "RAVINE", "RIDGE"], // the Colonel's arc: Redacted Files come faster here
+  sisterPath: ["POST", "VALLEY", "BLUFF", "RAVINE", "RIDGE"], // the Sister's road in: Redacted Files come faster here
 };
 
 // ---------------- THE CAST ([P] names — docs/LORE+NAMES.md has the rename table) ----------------
 export const ROLES = {
-  walker: { key: "walker", name: "ROOK", title: "THE WALKER", side: "walker", aura: "LAST WARNING", ability: "LEGENDARY BRAVERY", glyph: "W" },
-  chief: { key: "chief", name: "CHIEF VOSS", title: "THE CHIEF", side: "law", aura: "TACTICAL OVERRIDE", ability: "BURIAL PROTOCOL", glyph: "C" },
-  hackett: { key: "hackett", name: "SGT. HACKETT", title: "DEPUTY", side: "law", aura: "LOUD FIRST", ability: "SNAP FIRE", glyph: "H" },
-  grimes: { key: "grimes", name: "OFC. GRIMES", title: "DEPUTY", side: "law", aura: "COLD SHOT", ability: "NONLETHAL STUN", glyph: "G" },
-  pollard: { key: "pollard", name: "POLLARD", title: "DOG MAN", side: "law", aura: "BONDED UNIT", ability: "COMMAND DOG", glyph: "P" },
-  lisk: { key: "lisk", name: "DEP. LISK", title: "DEPUTY", side: "law", aura: "EARLY WARNING", ability: "ANCHOR", glyph: "L" },
-  colonel: { key: "colonel", name: "COL. STROUD", title: "THE COLONEL", side: "colonel", aura: "WHAT HAVE WE DONE TO EACH OTHER", ability: "WHY ASK", glyph: "S" },
+  walker: { key: "walker", name: "ROOK", title: "THE WALKER", side: "walker", aura: "CLOSE COUNTRY", ability: "LEGENDARY BRAVERY", glyph: "W" },
+  sheriff: { key: "sheriff", name: "SHERIFF MABRY", title: "THE SHERIFF", side: "law", aura: "TACTICAL OVERRIDE", ability: "COUNTY BUSINESS", glyph: "M" },
+  pruitt: { key: "pruitt", name: "SGT. PRUITT", title: "DEPUTY", side: "law", aura: "LOUD FIRST", ability: "SNAP FIRE", glyph: "P" },
+  varner: { key: "varner", name: "DEP. VARNER", title: "DEPUTY", side: "law", aura: "COLD SHOT", ability: "NONLETHAL STUN", glyph: "V" },
+  tolley: { key: "tolley", name: "TOLLEY", title: "DOG MAN", side: "law", aura: "BONDED UNIT", ability: "COMMAND DOG", glyph: "T" },
+  crane: { key: "crane", name: "DEP. CRANE", title: "DEPUTY", side: "law", aura: "EARLY WARNING", ability: "ANCHOR", glyph: "C" },
+  sister: { key: "sister", name: "VERNA ROOK", title: "THE SISTER", side: "sister", aura: "PORCH LIGHT", ability: "REACH HIM", glyph: "S" },
   heller: { key: "heller", name: "MR. HELLER", title: "THE SPOOK", side: "heller", aura: "OPERATIONAL CLARITY", ability: "OVERRIDE", glyph: "X" },
-  dog: { key: "dog", name: "DEACON", title: "THE K-9", side: "law", glyph: "d" },
+  dog: { key: "dog", name: "BOONE", title: "THE K-9", side: "law", glyph: "d" },
 };
-export const DEPUTY_ORDER = ["hackett", "grimes", "pollard", "lisk"];   // who joins first in a 3–5 player game
+export const DEPUTY_ORDER = ["pruitt", "varner", "tolley", "crane"];   // who joins first in a 3–5 player game
 
 // ---------------- ENDINGS ----------------
 export const ENDINGS = {
-  CLEAN_EVASION: { n: 1, title: "CLEAN EVASION", winner: "WALKER", line: "He walked into the cold with nothing in his hands, and the cold let him keep walking." },
-  TALKED_DOWN: { n: 2, title: "TALKED DOWN", winner: "COLONEL", line: "The Colonel said his name. He sat down in the snow and let it be over." },
-  BURIAL_PROTOCOL: { n: 3, title: "BURIAL PROTOCOL", winner: "LAW", line: "The Chief got his face-off. Sweetwater got its quiet back." },
-  AT_WHAT_COST: { n: 4, title: "AT WHAT COST", winner: "LAW", line: "The Chief got his man. Count what it cost him and stop when you can't." },
-  FINAL_MISREAD: { n: 5, title: "FINAL MISREAD", winner: "NOBODY", line: "He saw a uniform coming and he fired. It was the only man who came to bring him home." },
-  NET_CLOSES: { n: 6, title: "THE NET CLOSES", winner: "LAW", line: "The state came over the ridge in trucks. Nobody in Sweetwater got to decide anything after that." },
+  CLEAN_EVASION: { n: 1, title: "CLEAN EVASION", winner: "WALKER", line: "He went up into the cold with nothing in his hands. Nobody followed him far enough to matter." },
+  BROUGHT_HOME: { n: 2, title: "BROUGHT HOME", winner: "SISTER", line: "Verna called him by the name their mother used. He set the shovel down and walked out with her." },
+  COUNTY_BUSINESS: { n: 3, title: "COUNTY BUSINESS", winner: "LAW", line: "Mabry settled it himself, up on the plateau, the way he'd wanted to all day. The county went back to sleep." },
+  AT_WHAT_COST: { n: 4, title: "AT WHAT COST", winner: "LAW", line: "Mabry got him. Then he had to drive home and keep living in that county." },
+  FINAL_MISREAD: { n: 5, title: "FINAL MISREAD", winner: "NOBODY", line: "Somebody came up the hill too fast and he turned and fired. It was Verna." },
+  NET_CLOSES: { n: 6, title: "THE NET CLOSES", winner: "LAW", line: "The state came up the mountain in trucks. After that nobody in Merritt County had a say." },
   // expansion additions
-  THE_TRUTH: { n: 7, title: "THE TRUTH", winner: "WALKER", x: true, line: "Three files, one conversation. The Spiral stopped at nine and two men walked down the mountain." },
+  THE_TRUTH: { n: 7, title: "THE TRUTH", winner: "WALKER", x: true, line: "Three files and one long talk on a cold rock. The Spiral stopped at nine and the two of them walked down together." },
   DISAPPEARED: { n: 8, title: "FINAL OVERRIDE: DISAPPEARED", winner: "HELLER", x: true, line: "There was no record of him by morning. Mr. Heller thanked everyone for their help." },
   OVERRIDE_CAUGHT: { n: 9, title: "FINAL OVERRIDE: CAUGHT", winner: "LAW", x: true, line: "The paperwork was already filled out. They only needed his signature, and then they didn't." },
   STALL: { n: 0, title: "STALL", winner: "NOBODY", line: "Nothing happened for a long time. (The game hit its round cap — a rules bug, not an ending.)" },
@@ -210,10 +210,10 @@ export const ENDINGS = {
 
 // ---------------- DECKS ----------------
 const TRAUMA = [
-  ...Array(4).fill({ k: "PSYCHE", t: "THE BARS", d: "Psyche +1." }),
-  ...Array(2).fill({ k: "RAGE", t: "THE HOSE", d: "Rage +1." }),
-  ...Array(2).fill({ k: "ZEN", t: "THE FACES", d: "Zen −1." }),
-  ...Array(2).fill({ k: "FLASH", t: "FLASHBACK", d: "Lose your next action." }),
+  ...Array(4).fill({ k: "PSYCHE", t: "SMALL ROOMS", d: "Psyche +1." }),
+  ...Array(2).fill({ k: "RAGE", t: "HANDS ON HIM", d: "Rage +1." }),
+  ...Array(2).fill({ k: "ZEN", t: "THE NAMES", d: "Zen −1." }),
+  ...Array(2).fill({ k: "FLASH", t: "LOST TIME", d: "Lose your next action." }),
   { k: "HEAL", t: "LIVING ROUGH", d: "+1 HP (counts against the 3-HP heal cap)." },
   { k: "NONE", t: "STAY UPRIGHT", d: "You don't recover. You stay upright. No effect." },
 ];
@@ -225,11 +225,11 @@ const PSYCHE_PLUS = [
   ...Array(3).fill({ k: "ZENUP", t: "STILLNESS", d: "Zen +1." }),
 ];
 const NIGHTMARE = [
-  ...Array(3).fill({ k: "SEIZE", t: "SEIZED", d: "Heller takes one officer's action this round." }),
+  ...Array(3).fill({ k: "SEIZE", t: "SEIZED", d: "Heller takes one deputy's action this round." }),
   ...Array(3).fill({ k: "NOAURA", t: "AURAS CANCELLED", d: "No auras this round (both sides)." }),
-  ...Array(3).fill({ k: "CONFLICT", t: "CONFLICTING ORDERS", d: "Two officers lose their next action." }),
-  ...Array(2).fill({ k: "REASSIGN", t: "REASSIGNED", d: "An officer leaves the board for 2 rounds." }),
-  { k: "SILENCE", t: "SILENCED", d: "An officer is removed for good. A betrayal is witnessed: Spiral +1." },
+  ...Array(3).fill({ k: "CONFLICT", t: "CONFLICTING ORDERS", d: "Two deputies lose their next action." }),
+  ...Array(2).fill({ k: "REASSIGN", t: "REASSIGNED", d: "A deputy leaves the board for 2 rounds." }),
+  { k: "SILENCE", t: "SILENCED", d: "A deputy is removed for good. A betrayal is witnessed: Spiral +1." },
   ...Array(2).fill({ k: "FALSIFY", t: "FALSIFIED DROP", d: "The Walker's next cache is poisoned: Psyche +1 instead of the heal." }),
   ...Array(2).fill({ k: "LEAK", t: "PRESS LEAK", d: "Guard +1." }),
   ...Array(2).fill({ k: "JURIS", t: "JURISDICTION FIGHT", d: "Guard −1, Spiral +1." }),
@@ -246,15 +246,15 @@ export const DECK_SIZES = { trauma: TRAUMA.length, psychePlus: PSYCHE_PLUS.lengt
 export const ACTS = ["MOVE", "FIRE", "SCAN", "STEALTH", "CALL OUT", "ACTIVATE"];
 
 // ---------------- SEATS ----------------
-// players 2..6 core (2..7 with the expansion). Seat 0 = the Walker. Law seats split the Chief + deputies (+ Heller).
-// 2 players: one Law seat runs the Chief and ALL four deputies (and Heller). 3+: each extra player brings one deputy.
+// players 2..6 core (2..7 with the expansion). Seat 0 = the Walker. Law seats split the Sheriff + deputies (+ Heller).
+// 2 players: one Law seat runs the Sheriff and ALL four deputies (and Heller). 3+: each extra player brings one deputy.
 export function lawCast(players, expansion, allDeputies = false) {
   const nDep = players <= 2 || allDeputies ? 4 : Math.min(4, players - 2 - (expansion && players >= 4 ? 1 : 0));
   return { deputies: DEPUTY_ORDER.slice(0, Math.max(1, nDep)), heller: !!expansion };
 }
 export function seatPlan(players, expansion, allDeputies = false) {
   const { deputies, heller } = lawCast(players, expansion, allDeputies);
-  const law = ["chief", ...deputies, ...(heller ? ["heller"] : [])];
+  const law = ["sheriff", ...deputies, ...(heller ? ["heller"] : [])];
   if (players <= 2) return [{ side: "walker", roles: ["walker"] }, { side: "law", roles: law }];
   const seats = [{ side: "walker", roles: ["walker"] }];
   const rest = players - 1; for (let i = 0; i < rest; i++) seats.push({ side: "law", roles: [] });
@@ -267,36 +267,36 @@ export class Game {
   constructor({ seed = 1, players = 2, expansion = false, rules = "TUNED", knobs = null } = {}) {
     this.seed = seed >>> 0; this.players = players; this.expansion = !!expansion;
     this.K = { ...(knobs || PRESETS[rules] || TUNED) };
-    if (this.expansion) { this.K.holdRounds = this.K.holdRoundsX; if (this.K.clockX !== null && this.K.clockX !== undefined) this.K.clockEvery = this.K.clockX; if (this.K.talkAdjX !== null && this.K.talkAdjX !== undefined) this.K.colonelTalksAdjacent = this.K.talkAdjX; if (this.K.riskEscalateX) this.K.riskEscalate = this.K.riskEscalateX; }
+    if (this.expansion) { this.K.holdRounds = this.K.holdRoundsX; if (this.K.clockX !== null && this.K.clockX !== undefined) this.K.clockEvery = this.K.clockX; if (this.K.talkAdjX !== null && this.K.talkAdjX !== undefined) this.K.sisterTalksAdjacent = this.K.talkAdjX; if (this.K.riskEscalateX) this.K.riskEscalate = this.K.riskEscalateX; }
     this.rng = makeRng(this.seed ^ 0xC01D5);
     this.round = 0; this.spiral = 0; this.guard = 0; this.ended = null; this.phase = "setup";
-    this.log = []; this.stats = { acts: { walker: {}, law: {} }, decisions: 0, options: 0, seatTurns: 0, traumas: 0, kills: 0, wounds: 0, hitsOnWalker: 0, trapsSprung: 0, whyAsk: 0, showdowns: 0, sightings: 0 };
+    this.log = []; this.stats = { acts: { walker: {}, law: {} }, decisions: 0, options: 0, seatTurns: 0, traumas: 0, kills: 0, wounds: 0, hitsOnWalker: 0, trapsSprung: 0, reachHim: 0, showdowns: 0, sightings: 0 };
     this.seats = seatPlan(players, expansion, this.K.allDeputies);
     const { deputies, heller } = lawCast(players, expansion, this.K.allDeputies);
     const K = this.K;
     const fig = (role, hp, zone) => ({ id: role, role, ...ROLES[role], hp, maxHp: hp, zone, alive: true, skip: 0, away: 0, transit: null, nerve: K.nerve[role] ?? 3 });
     this.figs = {};
     this.figs.walker = { ...fig("walker", K.walkerHP, "BEND"), rage: K.walkerStart.rage, zen: K.walkerStart.zen, psyche: K.walkerStart.psyche, weapon: "TOOL", healed: 0, bravery: true, hold: 0, everCold: false, kits: K.trapKits, falsified: 0 };
-    this.figs.chief = { ...fig("chief", K.chiefHP, "STATION"), weapon: "PISTOL", desperate: false };
+    this.figs.sheriff = { ...fig("sheriff", K.sheriffHP, "STATION"), weapon: "PISTOL", desperate: false };
     for (const d of deputies) this.figs[d] = fig(d, K.otherHP, "STATION");
-    if (this.figs.pollard && this.kit("pollard")) this.figs.dog = { ...fig("dog", 1, "STATION"), nerve: 0 };
-    this.figs.colonel = { ...fig("colonel", K.otherHP, null), files: 0, filesOpen: false, spoke: false };
+    if (this.figs.tolley && this.kit("tolley")) this.figs.dog = { ...fig("dog", 1, "STATION"), nerve: 0 };
+    this.figs.sister = { ...fig("sister", K.otherHP, null), files: 0, filesOpen: false, spoke: false };
     if (heller) this.figs.heller = { ...fig("heller", K.otherHP, "POST"), override: true, ordnance: ORDNANCE.slice(), finalOverride: true };
     this.decks = { trauma: this.rng.shuffle(TRAUMA), psyche: this.rng.shuffle(PSYCHE_PLUS), nightmare: this.rng.shuffle(NIGHTMARE), redacted: this.rng.shuffle(REDACTED) };
     this.traps = [];        // { zone, owner: "walker"|"system", kind, known }
     this.caches = [];       // { zone, used }
-    this.rifles = K.rifle === false ? [] : ["DRAW"]; // a hunter's camp in the draw: a rifle the Walker can take (the screenplay's hunter)
+    this.rifles = K.rifle === false ? [] : ["DRAW"]; // somebody's deer camp: a rifle the Walker can take
     this.lastSeen = { zone: "BEND", round: 0 };   // the Law watched him go off the road at the bend
     this.blips = [];        // { zone, round, why }
     this.scent = "BEND";
-    this.anchor = null;     // Lisk's held zone
+    this.anchor = null;     // Crane's held zone
     this.ambush = {};       // fig id -> zone (this round)
     this.engaged = false;   // shots involving the Walker this round
     this.loud = false;
     this.noAura = false; this.weather = 0; this.risk = 0;
     this.intents = {}; this.queue = []; this.pendingSetup = [];
     this.say(`COLD SUNSET. Seed ${this.seed} · ${players} players · ${this.expansion ? "with the expansion" : "core"} · ${K.name} rules.`, "all");
-    this.say(`Sweetwater, Kentucky. The Walker went off the road at Cutter's Bend. The Chief has his deputies at the station.`, "all");
+    this.say(`Tallow Gap, Tennessee. Rook went into the trees at Sawmill Bend. Sheriff Mabry has every deputy he's got in the jail lot.`, "all");
     this.setupQueue();
   }
 
@@ -404,7 +404,7 @@ export class Game {
     if (K.guardClockEvery && this.round % K.guardClockEvery === 0) this.bump("guard", 1, "the state is coming");
     if (this.trapsLive) for (const f of [this.W(), ...this.hunters()]) this.trapCheck(f, true);
     if (this.ended) return;
-    if (this.figs.colonel.zone === null && this.round >= K.colonelArrive) { this.figs.colonel.zone = "POST"; this.say(`COLONEL STROUD gets off a helicopter at the Route 9 post.`, "all"); if (this.expansion && K.filesOnArrival) { this.figs.colonel.filesOpen = K.filesOnArrival === "path" ? "path" : true; this.say(`He has a folder under his arm. He starts digging the day he lands.`, "all"); } }
+    if (this.figs.sister.zone === null && this.round >= K.sisterArrive) { this.figs.sister.zone = "POST"; this.say(`VERNA ROOK pulls into the feed store lot in a borrowed pickup. She drove all night.`, "all"); if (this.expansion && K.filesOnArrival) { this.figs.sister.filesOpen = K.filesOnArrival === "path" ? "path" : true; this.say(`She has a shoebox of his letters and a lawyer's number. She starts digging the day she gets there.`, "all"); } }
     // the Walker sees every hunter; the Law sees what it has seen
     if (this.checkMeters()) return;
     this.phase = "intent";
@@ -440,12 +440,12 @@ export class Game {
       if (K.run !== false) for (const l of ADJ[here]) if (this.canEnter(w, l.to) && this.moveCost(l.to) === 1) for (const m of ADJ[l.to]) if (m.to !== here && this.canEnter(w, m.to) && !ADJ[here].some(x => x.to === m.to) && this.moveCost(m.to) === 1 && !two.has(m.to)) { two.add(m.to); add({ id: `run:${l.to}:${m.to}`, act: "MOVE", run: true, to: m.to, via: l.to, label: `RUN → ${ZONE[m.to].name} (via ${ZONE[l.to].name})`, cost: "1 action · LOUD: leaves a blip in both zones", why: this.walkerMoveWhy(m.to) }); }
       add({ id: "stealth", act: "STEALTH", label: "STEALTH — go to ground", cost: "1 action", why: `Hunters must SCAN to see you this round. Psyche −1 if no hunter is in or next to your zone (now ${w.psyche}; clean needs ≤ ${K.cleanPsyche}).` });
       if (K.walkerScan !== false) add({ id: "scan", act: "SCAN", label: "SCAN — listen to the woods", cost: "1 action", why: `Zen +1 and Rage −1 if no hunter is in or next to your zone (Zen ${w.zen}; clean needs ≥ ${K.cleanZen}).` });
-      if (K.walkerCallOut === "warning") add({ id: "callout", act: "CALL OUT", label: "CALL OUT — LAST WARNING", cost: "1 action · REVEALS your zone", why: `Tell them you don't want this. Guard −1 (now ${this.guard}/${K.guardMax}: the only way you can lower it) and Zen +1, even with hunters near. If the Colonel is in voice range he answers with WHY ASK.` });
-      else if (K.walkerCallOut !== "none") add({ id: "callout", act: "CALL OUT", label: "CALL OUT — say something into the dark", cost: "1 action · REVEALS your zone", why: `Zen +1 even with hunters near. If the Colonel is in voice range he answers with WHY ASK.` });
+      if (K.walkerCallOut === "warning") add({ id: "callout", act: "CALL OUT", label: "CALL OUT — HOLLER", cost: "1 action · REVEALS your zone", why: `Holler down the hill that you're not shooting. Guard −1 (now ${this.guard}/${K.guardMax}: the only way you can lower it) and Zen +1, even with hunters near. If Verna is in voice range she answers: REACH HIM.` });
+      else if (K.walkerCallOut !== "none") add({ id: "callout", act: "CALL OUT", label: "CALL OUT — say something into the dark", cost: "1 action · REVEALS your zone", why: `Zen +1 even with hunters near. If Verna is in voice range she answers: REACH HIM.` });
       const targets = K.walkerFire === false ? [] : this.hunters().filter(h => h.role !== "dog" ? true : true).filter(h => h.zone === here || (w.weapon === "RIFLE" && adjacent(here, h.zone) && !this.whiteoutBlocks(here, h.zone)));
       for (const h of targets) {
         const range = h.zone === here ? "same zone" : "next zone";
-        add({ id: `fire:${h.id}:WOUND`, act: "FIRE", target: h.id, mode: "WOUND", label: `FIRE — WOUND ${h.name}`, cost: `1 action · ${w.weapon === "RIFLE" ? "LOUD (Guard +1)" : "quiet (the tool)"} · ${range}`, why: K.woundCarry ? `Hit on ${this.walkerHitNeed(h)}+. They're carried out: back to the station, and they lose a round. Nobody dies; your Zen holds.` : `Hit on ${this.walkerHitNeed(h)}+. A wound drops them for a round; nobody dies; your Zen holds.` });
+        add({ id: `fire:${h.id}:WOUND`, act: "FIRE", target: h.id, mode: "WOUND", label: `FIRE — WOUND ${h.name}`, cost: `1 action · ${w.weapon === "RIFLE" ? "LOUD (Guard +1)" : "quiet (the tool)"} · ${range}`, why: K.woundCarry ? `Hit on ${this.walkerHitNeed(h)}+. They're carried out: back to the county jail, and they lose a round. Nobody dies; your Zen holds.` : `Hit on ${this.walkerHitNeed(h)}+. A wound drops them for a round; nobody dies; your Zen holds.` });
         add({ id: `fire:${h.id}:KILL`, act: "FIRE", target: h.id, mode: "KILL", label: `FIRE — KILL ${h.name}`, cost: `1 action · ${w.weapon === "RIFLE" ? "LOUD" : "quiet"} · a death: Spiral +1, Guard +1, a Trauma`, why: `Hit on ${this.walkerHitNeed(h)}+ for ${w.weapon === "RIFLE" ? 2 : 1} damage. Fewer hunters, a darker man.` });
       }
       if (this.traps.filter(t => t.owner === "walker").length < 99 && w.kits > 0 && !this.traps.some(t => t.zone === here) && ZONE[here].tier !== "TOWN" && here !== "COLD") add({ id: "trap", act: "ACTIVATE", sub: "TRAP", label: `ACTIVATE — SET A TRAP here (${w.kits} kit${w.kits > 1 ? "s" : ""} left)`, cost: "1 action · hidden", why: "Springs on a live Risk Roll when a hunter enters or stands here." });
@@ -455,28 +455,28 @@ export class Game {
       if (w.weapon === "RIFLE") add({ id: "drop", act: "ACTIVATE", sub: "DROP", label: "ACTIVATE — DROP THE RIFLE", cost: "1 action", why: "Clean Evasion needs empty hands." });
       return out;
     }
-    if (id === "colonel") return [{ id: "auto", act: "AUTO", forced: true, label: "the Colonel moves on his own" }];
+    if (id === "sister") return [{ id: "auto", act: "AUTO", forced: true, label: "Verna moves on her own" }];
     if (id === "heller") {
       if (this.spiral >= 6 || (K.hellerEvery && this.round % K.hellerEvery === 0)) add({ id: "nightmare", act: "ACTIVATE", sub: "NIGHTMARE", label: "PLAY A NIGHTMARE CARD", cost: "1 action", why: `Jurisdictional Nightmare: overrides, cancels, conflicting orders. Triggers at Spiral 6+${K.hellerEvery ? ` (and every ${K.hellerEvery}rd round, Heller-initiated)` : ""}.` });
       if (f.ordnance.length) for (const z of ZONES.filter(z => z.tier !== "TOWN" && z.id !== "COLD" && !this.traps.some(t => t.zone === z.id && t.owner === "system"))) add({ id: `ord:${z.id}`, act: "ACTIVATE", sub: "ORDNANCE", zone: z.id, label: `PLANT ORDNANCE+ — ${z.name} (${f.ordnance[0]})`, cost: "1 action", why: "Black-ops traps: rarely avoidable. A tripwire that strikes the Walker raises the Spiral." });
       add({ id: "hold", act: "STEALTH", label: "WAIT IN THE TRUCK", cost: "1 action", why: "Mr. Heller can never win. He decides how the others lose." });
       return out;
     }
-    if (id === "dog") return [{ id: "auto", act: "AUTO", forced: true, label: "the dog follows the handler" }];
+    if (id === "dog") return [{ id: "auto", act: "AUTO", forced: true, label: "Boone stays with Tolley" }];
     // ----- a Law figure -----
     const here = f.zone, seen = this.W().seenRound >= this.round - 1 ? this.lastSeen.zone : null;
     if (f.transit) add({ id: `move:${f.transit.to}`, act: "MOVE", to: f.transit.to, label: `KEEP GOING → ${ZONE[f.transit.to].name}`, cost: "1 action (finishing a 2-cost move)", why: "Frost and ice." });
     for (const l of ADJ[here]) if (this.canEnter(f, l.to)) add({ id: `move:${l.to}`, act: "MOVE", to: l.to, label: `MOVE → ${ZONE[l.to].name}`, cost: `1 action${this.moveCost(l.to) > 1 ? " · takes 2 actions" : ""}${l.shaft ? " · mineshaft hazard" : ""}`, why: this.lawMoveWhy(l.to) });
     add({ id: "scan", act: "SCAN", label: "SCAN — sweep your zone and the next", cost: "1 action", why: `Finds him on ${this.scanNeed(f, true)}+ in your zone, ${this.scanNeed(f, false)}+ next door (if he's there).` });
     if (K.ambush !== false) add({ id: "ambush", act: "STEALTH", label: "STEALTH — hold an ambush here", cost: "1 action", why: "If he comes into your zone this round he's seen and you get a free shot." });
-    const range = (z) => z === here || (f.role !== "chief" || f.weapon === "RIFLE") && adjacent(here, z) && !this.whiteoutBlocks(here, z);
-    if (K.lawFire !== false && seen && range(seen)) add({ id: `fire:${seen}`, act: "FIRE", zone: seen, label: `FIRE — into ${ZONE[seen].name} (he was seen there)`, cost: `1 action · LOUD (Guard +1)`, why: `Hit on ${this.lawHitNeed(f, seen)}+ if he's still there when you shoot.${f.role === "grimes" ? " Nonlethal Stun: he loses an action instead of HP." : ""}` });
-    if (K.lawFire !== false && this.kit("hackett") && f.role === "hackett" && !seen) for (const b of this.blips.filter(b => b.round >= this.round - 1)) if (range(b.zone)) add({ id: `snap:${b.zone}`, act: "FIRE", zone: b.zone, snap: true, label: `SNAP FIRE — at the noise in ${ZONE[b.zone].name}`, cost: "1 action · LOUD", why: "Loud First: shoot at a blip without seeing him. Hits on a 6." });
+    const range = (z) => z === here || (f.role !== "sheriff" || f.weapon === "RIFLE") && adjacent(here, z) && !this.whiteoutBlocks(here, z);
+    if (K.lawFire !== false && seen && range(seen)) add({ id: `fire:${seen}`, act: "FIRE", zone: seen, label: `FIRE — into ${ZONE[seen].name} (he was seen there)`, cost: `1 action · LOUD (Guard +1)`, why: `Hit on ${this.lawHitNeed(f, seen)}+ if he's still there when you shoot.${f.role === "varner" ? " Nonlethal Stun: he loses an action instead of HP." : ""}` });
+    if (K.lawFire !== false && this.kit("pruitt") && f.role === "pruitt" && !seen) for (const b of this.blips.filter(b => b.round >= this.round - 1)) if (range(b.zone)) add({ id: `snap:${b.zone}`, act: "FIRE", zone: b.zone, snap: true, label: `SNAP FIRE — at the noise in ${ZONE[b.zone].name}`, cost: "1 action · LOUD", why: "Loud First: shoot at a blip without seeing him. Hits on a 6." });
     if (f.role !== "heller" && K.lawRadio !== "none" && (!K.callOutLimit || (this.callOuts || 0) < K.callOutLimit)) add({ id: "callout", act: "CALL OUT", label: "CALL OUT — radio the state", cost: `1 action · Spiral +${K.callOutSpiral}${K.callOutLimit ? ` · ${K.callOutLimit - (this.callOuts || 0)} radio call${K.callOutLimit - (this.callOuts || 0) > 1 ? "s" : ""} left this game` : ""}`, why: K.lawRadio === "ground" ? "The state's chopper makes one pass: after he moves, it tells you what ground he's on (town, foothills, deep woods or the Cold Zone). The story gets bigger." : "Every SCAN by the Law this round gets +1. The story gets bigger." });
-    if (f.role === "pollard" && this.figs.dog && this.figs.dog.alive) add({ id: "dog", act: "ACTIVATE", sub: "DOG", label: "ACTIVATE — COMMAND DOG", cost: "1 action", why: `Deacon runs ${K.dogSteps} toward the scent (where he was at the start of the round). If he's there, he's seen; if not, the scent is.` });
-    if (f.role === "lisk" && this.kit("lisk")) add({ id: "anchor", act: "ACTIVATE", sub: "ANCHOR", label: `ACTIVATE — ANCHOR ${ZONE[here].name}`, cost: "1 action", why: "He's seen if he comes into or out of this zone until you move." });
-    if (f.role === "chief" && this.spiral >= K.burialAt && seen === here) add({ id: "showdown", act: "ACTIVATE", sub: "SHOWDOWN", label: "ACTIVATE — BURIAL PROTOCOL (the face-off)", cost: "1 action · ends the game if you win", why: `Spiral ${this.spiral} ≥ ${K.burialAt}. A roll-off, him and you.` });
-    if (f.role === "chief" && K.chiefKit !== false) add({ id: "swap", act: "ACTIVATE", sub: "SWAP", label: `ACTIVATE — SWAP TO ${f.weapon === "PISTOL" ? "A RIFLE" : "THE PISTOL"}`, cost: "1 action", why: f.weapon === "PISTOL" ? "A rifle shoots into the next zone but loses Coiled Precision (+1)." : "His father's pistol alone: Coiled Precision +1, but same zone only." });
+    if (f.role === "tolley" && this.figs.dog && this.figs.dog.alive) add({ id: "dog", act: "ACTIVATE", sub: "DOG", label: "ACTIVATE — COMMAND DOG", cost: "1 action", why: `Boone runs ${K.dogSteps} toward the scent (where he was at the start of the round). If he's there, he's seen; if not, the scent is.` });
+    if (f.role === "crane" && this.kit("crane")) add({ id: "anchor", act: "ACTIVATE", sub: "ANCHOR", label: `ACTIVATE — ANCHOR ${ZONE[here].name}`, cost: "1 action", why: "He's seen if he comes into or out of this zone until you move." });
+    if (f.role === "sheriff" && this.spiral >= K.showdownAt && seen === here) add({ id: "showdown", act: "ACTIVATE", sub: "SHOWDOWN", label: "ACTIVATE — COUNTY BUSINESS (the face-off)", cost: "1 action · ends the game if you win", why: `Spiral ${this.spiral} ≥ ${K.showdownAt}. A roll-off, him and you.` });
+    if (f.role === "sheriff" && K.sheriffKit !== false) add({ id: "swap", act: "ACTIVATE", sub: "SWAP", label: `ACTIVATE — SWAP TO ${f.weapon === "PISTOL" ? "A RIFLE" : "THE REVOLVER"}`, cost: "1 action", why: f.weapon === "PISTOL" ? "A deer rifle reaches the next zone but loses Coiled Precision (+1)." : "His daddy's revolver alone: Coiled Precision +1, but same zone only." });
     if (this.traps.some(t => t.zone === here && t.known)) add({ id: "disarm", act: "ACTIVATE", sub: "DISARM", label: "ACTIVATE — CLEAR THE TRAP HERE", cost: "1 action", why: "A known trap; clear it before it springs." });
     return out;
   }
@@ -502,15 +502,15 @@ export class Game {
   lawHitNeed(f, zone) {
     const same = zone === f.zone; let n = same ? this.K.hitSame : this.K.hitAdj;
     const K = this.K;
-    if (!this.noAura) { if (f.role === "chief" && f.weapon === "PISTOL" && K.chiefKit !== false) n -= 1; if (f.role === "grimes" && !same && this.kit("grimes")) n -= 1; if (same && K.walkerAura !== false) n += 1; /* LAST WARNING: shots in his own zone −1 */ }
-    if (f.role === "chief" && f.desperate) n -= 1;
+    if (!this.noAura) { if (f.role === "sheriff" && f.weapon === "PISTOL" && K.sheriffKit !== false) n -= 1; if (f.role === "varner" && !same && this.kit("varner")) n -= 1; if (same && K.walkerAura !== false) n += 1; /* CLOSE COUNTRY: shots in his own zone −1 */ }
+    if (f.role === "sheriff" && f.desperate) n -= 1;
     if (this.figs.heller && this.figs.heller.alive && !this.noAura) n -= 1;
     if (!same && this.expansion && this.weather === 2) n += 1;
     return Math.max(2, Math.min(6, n));
   }
   scanNeed(f, same) {
     let n = same ? this.K.scanSame : this.K.scanAdj;
-    if (f.role === "lisk" && !this.noAura && this.kit("lisk")) n -= 1;
+    if (f.role === "crane" && !this.noAura && this.kit("crane")) n -= 1;
     if (this.radio && this.K.lawRadio !== "ground") n -= 1;
     if (this.figs.heller && this.figs.heller.alive && !this.noAura && this.K.hellerScan) n -= 1;
     if (this.expansion && this.weather === 3) n += 1;
@@ -529,8 +529,8 @@ export class Game {
     if (this.ended) return;
     if (this.radio && this.K.lawRadio === "ground" && this.W().alive && this.K.radioStealth && this.intents.walker?.act === "STEALTH") this.say(`The state's chopper makes its pass: nothing. He's gone to ground.`, "all");
     else if (this.radio && this.K.lawRadio === "ground" && this.W().alive) { const t = ZONE[this.W().zone].tier; this.radioGround = { tier: t, round: this.round }; this.say(`The state's chopper makes its pass: he's in ${GROUND[t]}.`, "all"); }
-    const order = Object.keys(this.intents).filter(id => id !== "walker" && id !== "heller" && id !== "colonel" && this.figs[id] && this.figs[id].alive)
-      .sort((a, b) => (this.figs[b].nerve - this.figs[a].nerve) || (a === "chief" ? -1 : b === "chief" ? 1 : a < b ? -1 : 1));
+    const order = Object.keys(this.intents).filter(id => id !== "walker" && id !== "heller" && id !== "sister" && this.figs[id] && this.figs[id].alive)
+      .sort((a, b) => (this.figs[b].nerve - this.figs[a].nerve) || (a === "sheriff" ? -1 : b === "sheriff" ? 1 : a < b ? -1 : 1));
     for (const id of order) {
       const f = this.figs[id]; if (!f.alive || f.away) continue;
       if (this.seized === id) { this.say(`${f.name}'s orders are overridden by Mr. Heller.`, "all"); continue; }
@@ -557,7 +557,7 @@ export class Game {
     const from = f.zone; f.zone = to; f.transit = null;
     if (f.id === "walker") {
       this.walkerMoved = true;
-      if (this.anchor && (this.anchor === to || this.anchor === from)) this.sight("Lisk's anchor");
+      if (this.anchor && (this.anchor === to || this.anchor === from)) this.sight("Crane's anchor");
       if (to === "COLD" && !f.everCold) { f.everCold = true; }
       if (to === "COLD") { this.sight("he walked into the Cold Zone"); this.trauma("entering the Cold Zone"); }
       for (const [id, az] of Object.entries(this.ambush)) if (az === to && this.figs[id].alive) { this.sight(`${this.figs[id].name}'s ambush`); this.lawShot(this.figs[id], to, true); if (this.ended) return; }
@@ -593,8 +593,8 @@ export class Game {
       case "CALL OUT":
         w.zen = Math.min(6, w.zen + 1);
         this.sight("he called out");
-        if (K.walkerCallOut === "warning") { this.stats.warnings = (this.stats.warnings || 0) + 1; this.bump("guard", -1, "LAST WARNING: he's talking, not shooting"); }
-        { const c = this.figs.colonel; if (c.alive && c.zone && dist(c.zone, w.zone) <= 1) this.whyAsk("he called out and the Colonel answered"); }
+        if (K.walkerCallOut === "warning") { this.stats.warnings = (this.stats.warnings || 0) + 1; this.bump("guard", -1, "HOLLER: he's talking, not shooting"); }
+        { const c = this.figs.sister; if (c.alive && c.zone && dist(c.zone, w.zone) <= 1) this.reachHim("he called out and Verna answered"); }
         break;
       case "FIRE": {
         const h = this.figs[o.target]; if (!h || !h.alive || h.away) break;
@@ -605,7 +605,7 @@ export class Game {
         if (w.weapon === "RIFLE" || h.zone !== w.zone) this.sight("gunfire");
         if (r < need) { this.say(`The Walker attacks ${h.name} — ${r} vs ${need}: miss.`, "all"); break; }
         if (o.mode === "WOUND") { h.skip = Math.max(h.skip, 1); this.stats.wounds++;
-          if (K.woundCarry && h.role !== "dog") { h.zone = "STATION"; h.transit = null; delete this.ambush[h.id]; if (h.role === "lisk") this.anchor = null; if (h.role === "pollard" && this.figs.dog && this.figs.dog.alive) this.figs.dog.zone = "STATION"; this.say(`The Walker drops ${h.name} (${r} vs ${need}): wounded and carried out to the station. Nobody dies.`, "all"); }
+          if (K.woundCarry && h.role !== "dog") { h.zone = "STATION"; h.transit = null; delete this.ambush[h.id]; if (h.role === "crane") this.anchor = null; if (h.role === "tolley" && this.figs.dog && this.figs.dog.alive) this.figs.dog.zone = "STATION"; this.say(`The Walker drops ${h.name} (${r} vs ${need}): wounded and hauled back to the county jail. Nobody dies.`, "all"); }
           else this.say(`The Walker drops ${h.name} (${r} vs ${need}): wounded, out for a round. Nobody dies.`, "all"); }
         else this.hurt(h, w.weapon === "RIFLE" ? 2 : 1, "the Walker", w);
         break;
@@ -626,7 +626,7 @@ export class Game {
   resolveLaw(f, o) {
     const w = this.W();
     switch (o.act) {
-      case "MOVE": this.say(`${f.name} heads for ${ZONE[o.to].name}.`, "all"); this.tryMove(f, o); if (f.id === "pollard" && this.figs.dog && this.figs.dog.alive && this.figs.dog.zone !== f.zone && !this.dogSent) this.figs.dog.zone = f.zone; break;
+      case "MOVE": this.say(`${f.name} heads for ${ZONE[o.to].name}.`, "all"); this.tryMove(f, o); if (f.id === "tolley" && this.figs.dog && this.figs.dog.alive && this.figs.dog.zone !== f.zone && !this.dogSent) this.figs.dog.zone = f.zone; break;
       case "SCAN": {
         if (w.seenRound === this.round) { this.say(`${f.name} scans — he's already in plain sight.`, "all"); break; }
         const same = w.zone === f.zone, adj = adjacent(w.zone, f.zone);
@@ -642,24 +642,24 @@ export class Game {
         if (o.sub === "DOG") this.commandDog(f);
         if (o.sub === "ANCHOR") { this.anchor = f.zone; this.say(`${f.name} anchors ${ZONE[f.zone].name}.`, "all"); }
         if (o.sub === "SHOWDOWN") this.showdown(f);
-        if (o.sub === "SWAP") { f.weapon = f.weapon === "PISTOL" ? "RIFLE" : "PISTOL"; this.say(`${f.name} takes ${f.weapon === "RIFLE" ? "a rifle" : "only his father's pistol"}.`, "all"); }
+        if (o.sub === "SWAP") { f.weapon = f.weapon === "PISTOL" ? "RIFLE" : "PISTOL"; this.say(`${f.name} takes ${f.weapon === "RIFLE" ? "a rifle" : "only his daddy's revolver"}.`, "all"); }
         if (o.sub === "DISARM") { this.traps = this.traps.filter(t => !(t.zone === f.zone && t.known)); this.say(`${f.name} clears the trap in ${ZONE[f.zone].name}.`, "all"); }
         break;
     }
-    if (f.id === "lisk" && o.act === "MOVE") this.anchor = null;
+    if (f.id === "crane" && o.act === "MOVE") this.anchor = null;
     if (!this.ended) this.autoSight();
   }
   lawShot(f, zone, ambush = false, snap = false) {
     const w = this.W(); this.loud = true;
     const need = snap ? 6 : Math.max(2, this.lawHitNeed(f, zone) - (ambush ? 1 : 0));
     const r = this.rng.d6();
-    if (f.role === "hackett" && this.kit("hackett")) this.loudFirst = true;
+    if (f.role === "pruitt" && this.kit("pruitt")) this.loudFirst = true;
     if (w.zone !== zone) { this.say(`${f.name} fires into ${ZONE[zone].name} — nobody there.`, "all"); return; }
     this.engaged = true;
     if (r < need) { this.say(`${f.name} fires at him in ${ZONE[zone].name} — ${r} vs ${need}: miss.`, "all"); return; }
     if (!snap) this.sight("gunfire");
     this.stats.hitsOnWalker++;
-    if (f.role === "grimes" && !this.noAura && this.kit("grimes")) { w.skip = Math.max(w.skip, 1); this.say(`${f.name} hits him (${r}): NONLETHAL STUN — he loses his next action.`, "all"); w.rage++; return; }
+    if (f.role === "varner" && !this.noAura && this.kit("varner")) { w.skip = Math.max(w.skip, 1); this.say(`${f.name} hits him (${r}): NONLETHAL STUN — he loses his next action.`, "all"); w.rage++; return; }
     this.say(`${f.name} hits him (${r} vs ${need}).`, "all");
     this.hurt(w, 1, f.name, f);
   }
@@ -669,21 +669,21 @@ export class Game {
       t.rage++;
       if (t.hp <= 0 && t.bravery && this.K.bravery !== false) { t.bravery = false; t.hp = 1; this.say(`LEGENDARY BRAVERY: he gets up. 1 HP.`, "all"); }
       if (t.hp <= 0) { t.alive = false;
-        if (by && by.role === "chief") return this.end("AT_WHAT_COST", `${by.name} killed him${t.zone === "COLD" ? " in the Cold Zone" : ""}.`);
+        if (by && by.role === "sheriff") return this.end("AT_WHAT_COST", `${by.name} killed him${t.zone === "COLD" ? " in the Cold Zone" : ""}.`);
         return this.end("NET_CLOSES", `${why} brought him down; the state takes custody.`);
       }
       if (this.rng.d6() > t.nerve + (this.expansion && this.weather === 3 ? -1 : 0)) { this.say(`He panics.`, "all"); this.trauma("panic"); }
       return;
     }
-    if (t.role === "chief" && t.hp <= 2 && t.hp > 0 && !t.desperate && this.K.chiefKit !== false) { t.desperate = true; this.say(`CHIEF VOSS is desperate.`, "all"); this.bump("spiral", 1, "the Chief comes apart"); }
+    if (t.role === "sheriff" && t.hp <= 2 && t.hp > 0 && !t.desperate && this.K.sheriffKit !== false) { t.desperate = true; this.say(`SHERIFF MABRY is desperate.`, "all"); this.bump("spiral", 1, "the Sheriff comes apart"); }
     if (t.hp <= 0) {
       t.alive = false; t.zone = t.zone; this.stats.kills++;
       this.say(`${t.name} is dead (${why}).`, "all");
-      if (t.role === "colonel") { this.bump("spiral", 1, "the Colonel's death"); }
-      if (t.role === "dog") { this.say(`Pollard loses his dog.`, "all"); if (this.figs.pollard?.alive) this.figs.pollard.skip = 1; return; }
-      this.bump("spiral", 1, "a death"); this.bump("guard", 1, "a dead officer");
+      if (t.role === "sister") { this.bump("spiral", 1, "Verna's death"); }
+      if (t.role === "dog") { this.say(`Tolley loses his dog.`, "all"); if (this.figs.tolley?.alive) this.figs.tolley.skip = 1; return; }
+      this.bump("spiral", 1, "a death"); this.bump("guard", 1, "a dead deputy");
       if (by && by.id === "walker") { const w = this.W(); w.zen = Math.max(0, w.zen - 1); this.trauma("a kill"); if (t.weapon !== "PISTOL" && this.K.rifle !== false) this.rifles.push(t.zone); }
-    } else if (t.id !== "colonel" && t.id !== "dog" && this.rng.d6() > t.nerve) { t.skip = Math.max(t.skip, 1); this.say(`${t.name} loses their nerve.`, "all"); }
+    } else if (t.id !== "sister" && t.id !== "dog" && this.rng.d6() > t.nerve) { t.skip = Math.max(t.skip, 1); this.say(`${t.name} loses their nerve.`, "all"); }
   }
   trapCheck(f, atRisk) {
     for (const t of this.traps.filter(t => t.zone === f.zone && t.owner === "walker")) {
@@ -691,7 +691,7 @@ export class Game {
       if (!live) continue;
       if (this.expansion && this.weather === 4 && this.rng.next() < 0.5 && f.id !== "walker") { /* trap surge: auto */ }
       else if (f.id === "walker" && this.rng.d6() !== 1) continue;
-      if (f.role === "lisk" && !this.noAura && !t.spotted && this.kit("lisk")) { t.spotted = true; t.known = true; this.say(`${f.name} spots a trap in ${ZONE[t.zone].name} (Early Warning).`, "all"); continue; }
+      if (f.role === "crane" && !this.noAura && !t.spotted && this.kit("crane")) { t.spotted = true; t.known = true; this.say(`${f.name} spots a trap in ${ZONE[t.zone].name} (Early Warning).`, "all"); continue; }
       this.traps = this.traps.filter(x => x !== t); this.stats.trapsSprung++;
       this.blips.push({ zone: t.zone, round: this.round, why: "a trap" });
       if (f.id === "walker") { this.say(`Your own trap bites you in ${ZONE[t.zone].name}.`, "walker"); this.sight("his own trap"); this.hurt(f, 1, "his own trap", null); this.trauma("his own trap"); }
@@ -714,19 +714,19 @@ export class Game {
     let z = d.zone; for (let i = 0; i < this.K.dogSteps && z !== this.scent; i++) { const nx = ADJ[z].filter(l => dist(l.to, this.scent) < dist(z, this.scent) && this.canEnter(d, l.to)); if (!nx.length) break; z = nx[0].to; }
     d.zone = z; if (this.trapsLive) this.trapCheck(d, false);
     if (!d.alive) return;
-    if (d.zone === this.W().zone) this.sight("Deacon found him");
-    else if (d.zone === this.scent) { this.blips.push({ zone: this.scent, round: this.round, why: "scent" }); this.lastSeen = { zone: this.scent, round: this.round - 1 }; this.say(`Deacon has the scent in ${ZONE[this.scent].name}. He was there.`, "all"); }
-    else this.say(`Deacon pulls toward ${ZONE[z].name}.`, "all");
+    if (d.zone === this.W().zone) this.sight("Boone found him");
+    else if (d.zone === this.scent) { this.blips.push({ zone: this.scent, round: this.round, why: "scent" }); this.lastSeen = { zone: this.scent, round: this.round - 1 }; this.say(`Boone has the scent in ${ZONE[this.scent].name}. He was there.`, "all"); }
+    else this.say(`Boone pulls toward ${ZONE[z].name}.`, "all");
   }
   showdown(f) {
     const w = this.W(); this.stats.showdowns++;
     if (w.zone !== f.zone) { this.say(`${f.name} calls him out — he's gone.`, "all"); return; }
     this.engaged = true;
     const a = this.rng.d6() + (f.weapon === "PISTOL" ? 1 : 0) + (f.desperate ? 1 : 0), b = this.rng.d6() + (w.weapon === "RIFLE" ? 1 : 0) + (w.rage >= this.K.killRage ? 1 : 0);
-    this.say(`BURIAL PROTOCOL: the Chief ${a} vs the Walker ${b}.`, "all");
-    if (a >= b) return this.end(w.zone === "COLD" ? "AT_WHAT_COST" : "BURIAL_PROTOCOL", "The Chief won the face-off.");
-    f.hp = 0; f.alive = false; this.stats.kills++; this.say(`The Walker wins the face-off. CHIEF VOSS is dead.`, "all");
-    this.bump("spiral", 1, "the Chief's death"); this.bump("guard", 1, "a dead chief");
+    this.say(`COUNTY BUSINESS: the Sheriff ${a} vs the Walker ${b}.`, "all");
+    if (a >= b) return this.end(w.zone === "COLD" ? "AT_WHAT_COST" : "COUNTY_BUSINESS", "The Sheriff won the face-off.");
+    f.hp = 0; f.alive = false; this.stats.kills++; this.say(`The Walker wins the face-off. SHERIFF MABRY is dead.`, "all");
+    this.bump("spiral", 1, "the Sheriff's death"); this.bump("guard", 1, "a dead sheriff");
   }
   trauma(why, forcePlus = false) {
     if (this.K.trauma === false) return;
@@ -744,26 +744,26 @@ export class Game {
     w.psyche = Math.min(6, w.psyche); w.rage = Math.min(6, w.rage);
     this.bump("spiral", 1, "trauma", true);
   }
-  whyAsk(why) {
-    const c = this.figs.colonel, w = this.W(), K = this.K; this.stats.whyAsk++;
+  reachHim(why) {
+    const c = this.figs.sister, w = this.W(), K = this.K; this.stats.reachHim++;
     c.spoke = true; if (this.expansion) c.filesOpen = true;
-    if (this.engaged) { this.say(`The Colonel tries to talk — but there's shooting. No Why Ask.`, "all"); return; }
+    if (this.engaged) { this.say(`Verna tries to call to him, but there's shooting. She can't reach him.`, "all"); return; }
     if (w.rage >= K.killRage && !this.noAura) {
       const r = this.rng.d6();
-      if (r >= K.misreadOn) { c.alive = false; c.hp = 0; this.say(`He sees a uniform coming (${r}). He fires.`, "all"); this.bump("spiral", 2, "the Colonel's death"); return this.end("FINAL_MISREAD", "The Walker killed the Colonel."); }
-      this.say(`He almost fires on the Colonel (${r}). He doesn't. He doesn't listen, either.`, "all"); return;
+      if (r >= K.misreadOn) { c.alive = false; c.hp = 0; this.say(`Somebody's coming up on him fast (${r}). He fires.`, "all"); this.bump("spiral", 2, "Verna's death"); return this.end("FINAL_MISREAD", "The Walker shot his sister."); }
+      this.say(`He almost fires on Verna (${r}). He doesn't. He doesn't come in, either.`, "all"); return;
     }
     if (this.expansion && c.files >= 3) return this.end("THE_TRUTH", "Three files and a conversation.");
     let r = this.rng.d6();
     const h = this.figs.heller;
-    if (h && h.alive && h.override && r >= K.whyAsk) {
+    if (h && h.alive && h.override && r >= K.reachHim) {
       h.override = false; const o = this.rng.d6();
-      if (o >= 5) { this.say(`WHY ASK (${r}) — Mr. Heller OVERRIDES it (${o}).`, "all"); return; }
-      const r2 = this.rng.d6(); r = Math.max(r, r2); this.say(`Mr. Heller tries to override (${o}) and fails; the Colonel rolls again with advantage (${r}).`, "all");
-      const offs = this.lawFigs().filter(f => f.role !== "chief" && f.role !== "heller"); if (offs.length) { const x = this.rng.pick(offs); x.skip = Math.max(x.skip, 1); }
+      if (o >= 5) { this.say(`REACH HIM (${r}) — Mr. Heller OVERRIDES it (${o}).`, "all"); return; }
+      const r2 = this.rng.d6(); r = Math.max(r, r2); this.say(`Mr. Heller tries to override (${o}) and fails; Verna rolls again with advantage (${r}).`, "all");
+      const offs = this.lawFigs().filter(f => f.role !== "sheriff" && f.role !== "heller"); if (offs.length) { const x = this.rng.pick(offs); x.skip = Math.max(x.skip, 1); }
     }
-    this.say(`WHY ASK (${why}): ${r} — needs ${K.whyAsk}.`, "all");
-    if (r >= K.whyAsk) return this.end("TALKED_DOWN", "The Colonel talked him down.");
+    this.say(`REACH HIM (${why}): ${r} — needs ${K.reachHim}.`, "all");
+    if (r >= K.reachHim) return this.end("BROUGHT_HOME", "Verna brought him in.");
   }
   resolveHeller(o) {
     const h = this.figs.heller; if (!h || !h.alive) return;
@@ -771,7 +771,7 @@ export class Game {
     if (o.sub !== "NIGHTMARE") return;
     const d = this.decks.nightmare; if (!d.length) d.push(...this.rng.shuffle(NIGHTMARE));
     const c = d.shift(); this.say(`NIGHTMARE: ${c.t} — ${c.d}`, "all");
-    const offs = () => this.lawFigs().filter(f => !["chief", "heller"].includes(f.role));
+    const offs = () => this.lawFigs().filter(f => !["sheriff", "heller"].includes(f.role));
     switch (c.k) {
       case "SEIZE": { const x = offs(); if (x.length) this.seized = this.rng.pick(x).id; break; }
       case "NOAURA": this.noAura = true; break;
@@ -790,15 +790,15 @@ export class Game {
     if (this.ended) return;
     this.phase = "collapse"; const w = this.W(), K = this.K;
     if (this.loud) this.bump("guard", 1, "gunfire");
-    if (this.loudFirst) { this.bump("guard", 1, "Hackett shoots first"); this.loudFirst = false; }
+    if (this.loudFirst) { this.bump("guard", 1, "Pruitt shoots first"); this.loudFirst = false; }
     if (this.expansion) {
       if (OVERLAY.echo.includes(w.zone)) this.bump("guard", 1, "chopper echo");
       if (K.echoWho === "any") for (const f of this.hunters()) if (f.role !== "dog" && OVERLAY.echo.includes(f.zone)) { this.bump("guard", 1, "chopper echo"); break; }
     }
-    // the Colonel's move (the automa)
-    this.colonelMove(); if (this.ended) return;
-    // the Colonel's aura
-    const c = this.figs.colonel;
+    // the Sister's move (the automa)
+    this.sisterMove(); if (this.ended) return;
+    // the Sister's aura (PORCH LIGHT)
+    const c = this.figs.sister;
     if (c.alive && c.zone && dist(c.zone, w.zone) <= 1 && !this.noAura) w.rage = Math.max(0, w.rage - 1);
     // Heller's aura
     if (this.figs.heller && this.figs.heller.alive && !this.noAura) {
@@ -816,25 +816,25 @@ export class Game {
     if (this.checkMeters()) return;
     this.phase = "start";
   }
-  colonelMove() {
-    const c = this.figs.colonel, w = this.W(), K = this.K; if (!c.alive || !c.zone) return;
+  sisterMove() {
+    const c = this.figs.sister, w = this.W(), K = this.K; if (!c.alive || !c.zone) return;
     const known = w.seenRound >= this.round - 1 ? this.lastSeen.zone : null;
-    const goal = known || (K.colonelHidden === "LASTSEEN" ? this.lastSeen.zone : (this.coldOpen() ? "COLD" : "RIDGE"));
-    let steps = K.colonelMove === "d6" ? this.rng.d6() : K.colonelMove;
+    const goal = known || (K.sisterHidden === "LASTSEEN" ? this.lastSeen.zone : (this.coldOpen() ? "COLD" : "RIDGE"));
+    let steps = K.sisterMove === "d6" ? this.rng.d6() : K.sisterMove;
     let met = false;
     while (steps-- > 0 && c.zone !== goal) {
       const nx = ADJ[c.zone].filter(l => dist(l.to, goal) < dist(c.zone, goal) && (l.to !== "COLD" || this.coldOpen())); if (!nx.length) break;
       c.zone = nx[0].to;
-      if (this.expansion && c.filesOpen && OVERLAY.colonelPath.includes(c.zone)) this.redacted();
+      if (this.expansion && c.filesOpen && OVERLAY.sisterPath.includes(c.zone)) this.redacted();
       if (c.zone === w.zone) { met = true; break; }
     }
     if (c.zone === "COLD" && this.expansion) c.filesOpen = true;
-    if (this.expansion && c.filesOpen === true && !OVERLAY.colonelPath.includes(c.zone) && this.round % 2 === 0) this.redacted();
-    if (met || (K.colonelTalksAdjacent && dist(c.zone, w.zone) <= 1 && (w.seenRound >= this.round - 1 || c.zone === w.zone))) this.whyAsk(met ? "the Colonel walked into his zone" : "the Colonel is in voice range");
+    if (this.expansion && c.filesOpen === true && !OVERLAY.sisterPath.includes(c.zone) && this.round % 2 === 0) this.redacted();
+    if (met || (K.sisterTalksAdjacent && dist(c.zone, w.zone) <= 1 && (w.seenRound >= this.round - 1 || c.zone === w.zone))) this.reachHim(met ? "Verna walked into his zone" : "Verna is in voice range");
   }
   redacted() {
-    const c = this.figs.colonel, d = this.decks.redacted; if (!d.length || c.files >= 3) return;
-    const card = d.shift(); if (card.k === "FILE") { c.files++; this.say(`The Colonel uncovers a Redacted File (${c.files}/3).`, "all"); }
+    const c = this.figs.sister, d = this.decks.redacted; if (!d.length || c.files >= 3) return;
+    const card = d.shift(); if (card.k === "FILE") { c.files++; this.say(`Verna turns up a Redacted File (${c.files}/3).`, "all"); }
   }
   bump(meter, n, why, fromTrauma = false) {
     const K = this.K;
@@ -859,7 +859,7 @@ export class Game {
   }
   // Spiral 10: the ending is chosen (our order — docs/DESIGN.md §Spiral 10)
   forced() {
-    const w = this.W(), c = this.figs.colonel, ch = this.figs.chief, h = this.figs.heller;
+    const w = this.W(), c = this.figs.sister, ch = this.figs.sheriff, h = this.figs.heller;
     this.say(`THE SPIRAL HITS ${this.K.spiralMax}. The ending is chosen.`, "all");
     if (this.K.cleanBeatsOverride && w.zone === "COLD" && this.clean()) return this.end("CLEAN_EVASION", "He was in the Cold Zone, clean, when it all came down. No paperwork reaches that far.");
     if (this.expansion && this.K.overrideAt10 && h && h.alive && h.finalOverride && (!this.K.overrideNeedsSight || w.seenRound >= this.round - 1)) {
@@ -867,7 +867,7 @@ export class Game {
       return this.end("OVERRIDE_CAUGHT", "Mr. Heller played FINAL OVERRIDE.");
     }
     if (w.zone === "COLD" && this.clean()) return this.end("CLEAN_EVASION", "He was in the Cold Zone, clean, when it all came down.");
-    if (c.alive && c.zone && dist(c.zone, w.zone) <= 1) { this.engaged = false; this.whyAsk("the end of it"); if (this.ended) return; }
+    if (c.alive && c.zone && dist(c.zone, w.zone) <= 1) { this.engaged = false; this.reachHim("the end of it"); if (this.ended) return; }
     if (ch.alive && this.K.faceoff !== false) {
       ch.zone = w.zone; this.showdown(ch); if (this.ended) return;
     }
@@ -889,7 +889,7 @@ export class Game {
         Object.assign(pub, { rage: f.rage, zen: f.zen, psyche: f.psyche, hold: f.hold, kits: seeAll ? f.kits : undefined });
         if (!seeAll) { pub.zone = w.seenRound === this.round ? w.zone : null; pub.lastSeen = this.lastSeen; }
       }
-      if (f.id === "colonel") pub.files = f.files;
+      if (f.id === "sister") pub.files = f.files;
       return pub;
     });
     return {
@@ -916,19 +916,19 @@ export const WALKER_STYLES = {
 };
 export const LAW_STYLES = {
   steady: {},                                                                   // the default CPU: half sweep, half chase
-  sweep: { scanP: 0.85, scanTight: 5 },                                         // each officer stands where he is and sweeps
-  spread: { scanP: 0.1, scanTight: 1, claims: true },                           // fan out: every officer walks to his own possible zone
+  sweep: { scanP: 0.85, scanTight: 5 },                                         // each deputy stands where he is and sweeps
+  spread: { scanP: 0.1, scanTight: 1, claims: true },                           // fan out: every deputy walks to his own possible zone
   converge: { scanP: 0.1, scanTight: 1, claims: false, radio: 0.8 },            // the pack: everybody runs at the freshest lead
 };
 export class WalkerBot {
-  constructor(seed, style = {}) { if (typeof style === "string") style = WALKER_STYLES[style] || {}; this.rng = makeRng((seed >>> 0) ^ 0x57A1); this.style = { rifle: 0.0, killBias: 0.25, warnAt: 4, wound: 0.6, warnColonel: 3, seekTruth: true, threatW: 1.0, runPenalty: 1.5, fixFirst: 0.6, walk: 0.3, ...style }; }
+  constructor(seed, style = {}) { if (typeof style === "string") style = WALKER_STYLES[style] || {}; this.rng = makeRng((seed >>> 0) ^ 0x57A1); this.style = { rifle: 0.0, killBias: 0.25, warnAt: 4, wound: 0.6, warnSister: 3, seekTruth: true, threatW: 1.0, runPenalty: 1.5, fixFirst: 0.6, walk: 0.3, ...style }; }
   decide(g, p) {
     const w = g.W(), K = g.K, opts = p.options, by = (pred) => opts.filter(pred);
     if (p.setup) return this.setup(g, opts);
     if (opts.length === 1) return opts[0].id;
     const hunters = g.hunters().filter(h => h.role !== "dog");
-    const col = g.figs.colonel;
-    // THE TRUTH (expansion): once the Colonel holds three files he's the way out, not a threat
+    const col = g.figs.sister;
+    // THE TRUTH (expansion): once Verna holds three files she's the way out, not a threat
     const truth = g.expansion && col.alive && col.zone && col.files >= 3 && this.style.seekTruth;
     const threat = (z) => hunters.reduce((s, h) => s + (h.zone === z ? 10 : dist(h.zone, z) === 1 ? 4 : dist(h.zone, z) === 2 ? 1 : 0), 0)
       + (col.alive && col.zone && !truth ? (col.zone === z ? 3 : dist(col.zone, z) === 1 ? 1.5 : 0) : 0);
@@ -969,12 +969,12 @@ export class WalkerBot {
       return by(o => o.act === "STEALTH")[0].id;
     }
     const cache = by(o => o.sub === "CACHE")[0]; if (cache && w.hp <= w.maxHp - 2 && !near) return cache.id;
-    // CALL OUT: THE TRUTH (expansion) — three files and the Colonel in voice range: call him in
+    // CALL OUT: THE TRUTH (expansion) — three files and Verna in voice range: call her in
     const callout = by(o => o.act === "CALL OUT")[0];
     if (callout && g.expansion && col.alive && col.zone && col.files >= 3 && dist(col.zone, w.zone) <= 1 && w.rage < K.killRage) return callout.id;
-    // CALL OUT: LAST WARNING — the Guard is close to closing the net and he's out of the Cold Zone
-    const colonelNear = col.alive && col.zone && dist(col.zone, w.zone) <= this.style.warnColonel;
-    if (callout && K.walkerCallOut === "warning" && g.guard >= this.style.warnAt && !colonelNear && threat(w.zone) < 10) return callout.id;
+    // CALL OUT: HOLLER — the Guard is close to closing the net and he's out of the Cold Zone
+    const sisterNear = col.alive && col.zone && dist(col.zone, w.zone) <= this.style.warnSister;
+    if (callout && K.walkerCallOut === "warning" && g.guard >= this.style.warnAt && !sisterNear && threat(w.zone) < 10) return callout.id;
     const rifle = by(o => o.sub === "RIFLE")[0]; if (rifle && !cold && this.rng.next() < this.style.rifle) return rifle.id;
     const drop = by(o => o.sub === "DROP")[0]; if (drop && cold && dist(w.zone, "COLD") <= 2) return drop.id;
     if (near && best && score(best) > score({ to: w.zone }) - 1) return best.id;
@@ -1034,14 +1034,14 @@ export class LawBot {
     const fire = by(o => o.act === "FIRE" && !o.snap)[0]; if (fire) return fire.id;
     const P = this.possible(g);
     const here = f.zone;
-    if (p.fig === "pollard") { const dog = by(o => o.sub === "DOG")[0]; if (dog && P.length > 2) return dog.id; }
+    if (p.fig === "tolley") { const dog = by(o => o.sub === "DOG")[0]; if (dog && P.length > 2) return dog.id; }
     const snap = by(o => o.snap)[0]; if (snap && this.rng.next() < 0.5) return snap.id;
     // the hold needs the Cold Zone clear: if he's holding it, walk in
     if (g.K.holdNeedsClear && g.W().seenRound >= g.round - 1 && g.lastSeen.zone === "COLD") { const inn = by(o => o.act === "MOVE" && o.to === "COLD")[0]; if (inn) return inn.id; if (here === "COLD") return (by(o => o.act === "SCAN")[0]).id; }
     // the Cold Zone: once it's near, two of them guard the way in
-    const guards = ["chief", "lisk"];
+    const guards = ["sheriff", "crane"];
     if (g.spiral >= g.K.coldAt - 1 && guards.includes(p.fig)) {
-      const post = p.fig === "chief" ? "RIDGE" : "SQUEEZE";
+      const post = p.fig === "sheriff" ? "RIDGE" : "SQUEEZE";
       const target = g.canEnter(f, post) ? post : "RIDGE";
       if (here !== target) { const mv = this.stepTo(by(o => o.act === "MOVE"), here, target); if (mv) return mv.id; }
       return (by(o => o.sub === "ANCHOR")[0] || by(o => o.act === "STEALTH")[0] || by(o => o.act === "SCAN")[0]).id;
@@ -1052,7 +1052,7 @@ export class LawBot {
     if (co && g.K.lawRadio === "ground") {
       // the chopper is worth a call when he could be anywhere, and only one figure calls a round
       if (!this.claimed.__radio && P.length >= this.style.radioAt && g.spiral < g.K.coldAt - 1 && this.rng.next() < this.style.radio) { this.claimed.__radio = "radio"; return co.id; }
-    } else if (co && p.fig === "chief" && g.spiral < g.K.coldAt - 2 && P.length >= 6 && this.rng.next() < this.style.callOut) return co.id;
+    } else if (co && p.fig === "sheriff" && g.spiral < g.K.coldAt - 2 && P.length >= 6 && this.rng.next() < this.style.callOut) return co.id;
     if (scanCovers.length && (P.length <= this.style.scanTight || this.rng.next() < this.style.scanP)) return by(o => o.act === "SCAN")[0].id;
     // otherwise go to the nearest possible zone nobody's claimed
     const free = this.style.claims ? P.filter(z => !Object.values(this.claimed).includes(z)) : P;

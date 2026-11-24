@@ -74,8 +74,8 @@ select,input{font:inherit;background:var(--field);color:var(--paper);border:1.5p
 <body>
 <div id="title" class="overlay on"><div class="card">
   <h1>COLD SUNSET</h1>
-  <p>Sweetwater, Kentucky. One man in the woods. Everybody else is the Law.</p>
-  <p class="small">An asymmetric hide-and-hunt. The Walker wins by holding the Cold Zone clean (with the expansion, also by THE TRUTH: the Colonel's three files and one conversation). The Law wins when the net closes, or the Chief gets his face-off. The Colonel walks on his own.</p>
+  <p>Tallow Gap, Merritt County, Tennessee. One man up on the plateau. Everybody else is the Law.</p>
+  <p class="small">An asymmetric hide-and-hunt. The Walker wins by holding the Cold Zone clean (with the expansion, also by THE TRUTH: his sister's three files and one long talk). The Law wins when the net closes, or the Sheriff gets his face-off. Verna, his sister, walks on her own.</p>
   <div class="row">
     <button data-mode="walker">[1] play THE WALKER vs CPU</button>
     <button data-mode="law">[2] play THE LAW vs CPU</button>
@@ -206,7 +206,7 @@ function render(p, cpuTurn) {
   }
   // the sheet
   const w = v.figs.find(f => f.id === "walker");
-  const rows = v.figs.filter(f => f.id !== "walker").map(f => `<tr><td class="${f.side === "law" ? "l" : f.side === "colonel" ? "c" : "x"}">${f.glyph}</td><td>${f.name}</td><td>${f.alive ? `HP ${f.hp}/${f.maxHp}` : "DEAD"}${f.away ? " · away" : ""}${f.skip ? " · loses an action" : ""}${f.desperate ? " · DESPERATE" : ""}${f.files ? ` · files ${f.files}/3` : ""}</td></tr>`).join("");
+  const rows = v.figs.filter(f => f.id !== "walker").map(f => `<tr><td class="${f.side === "law" ? "l" : f.side === "sister" ? "c" : "x"}">${f.glyph}</td><td>${f.name}</td><td>${f.alive ? `HP ${f.hp}/${f.maxHp}` : "DEAD"}${f.away ? " · away" : ""}${f.skip ? " · loses an action" : ""}${f.desperate ? " · DESPERATE" : ""}${f.files ? ` · files ${f.files}/3` : ""}</td></tr>`).join("");
   const clean = w.weapon === "TOOL" && w.zen >= G.K.cleanZen && w.psyche <= G.K.cleanPsyche;
   $("stats").innerHTML = `<table><tr><td class="w">W</td><td>ROOK</td><td>HP ${w.hp}/${w.maxHp} · Rage ${w.rage} · Zen ${w.zen} · Psyche ${w.psyche} · ${w.weapon === "RIFLE" ? "RIFLE" : "E-tool"}${w.hold ? ` · HOLD ${w.hold}/${G.K.holdRounds}` : ""}</td></tr>${rows}</table>
     <p class="small">Clean (for the Cold Zone): empty hands ${w.weapon === "TOOL" ? "✓" : "✗"} · Zen ≥ ${G.K.cleanZen} ${w.zen >= G.K.cleanZen ? "✓" : "✗"} · Psyche ≤ ${G.K.cleanPsyche} ${w.psyche <= G.K.cleanPsyche ? "✓" : "✗"} — ${clean ? "<b class='w'>CLEAN</b>" : "not clean"}. Rage ${G.K.killRage} = kill logic.</p>
@@ -239,7 +239,7 @@ function drawBoard(v, side, p) {
   for (const z of ZONES) {
     const [x, y] = pos(z.id);
     const here = v.figs.filter(f => f.zone === z.id && f.alive);
-    const who = here.map(f => `<span class="${f.id === "walker" ? "w" : f.side === "law" ? "l" : f.side === "colonel" ? "c" : "x"}">${f.glyph}</span>`).join("");
+    const who = here.map(f => `<span class="${f.id === "walker" ? "w" : f.side === "law" ? "l" : f.side === "sister" ? "c" : "x"}">${f.glyph}</span>`).join("");
     const cls = ["zone", z.tier === "TOWN" ? "town" : "", z.id === "COLD" ? "cold" : "", z.id === "COLD" && !v.coldOpen ? "closed" : "", me === z.id && !G.ended ? "me" : "",
       side !== "walker" && v.lastSeen && v.lastSeen.zone === z.id ? (v.figs.find(f => f.id === "walker").zone === z.id ? "seen" : "last") : "",
       v.blips.some(b => b.zone === z.id) ? "blip" : "", v.traps.some(t => t.zone === z.id) ? "trap" : "",
