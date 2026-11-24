@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COLD SUNSET — the bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Rock+Salt&display=swap" rel="stylesheet">
+<style>
+:root{
+  --field:#141117; --dusk:#2a2238; --dusk2:#3a2c48; --paper:#efe6d6; --mute:#9b9183; --ink:#0c0a0d;
+  --red:#c0281f; --red2:#e0402f; --snow:#d9e3ea; --amber:#d8a24a; --law:#7fa6c9;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--field);color:var(--paper);font:14px/1.45 "Special Elite","Courier New",Courier,monospace}
+body{min-height:100vh}
+h1,h2,.brush{font-family:"Rock Salt","Marker Felt",cursive;font-weight:400;color:var(--red2);letter-spacing:.02em}
+button{font:inherit;color:inherit;background:var(--dusk);border:1.5px solid var(--paper);padding:6px 10px;cursor:pointer}
+button:hover,button:focus{background:var(--red);outline:none}
+#app{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:12px;padding:12px 16px;max-width:1400px;margin:0 auto}
+#side{grid-row:span 2;align-self:start}
+@media (max-width:980px){#app{grid-template-columns:1fr} #side{grid-row:auto}}
+header{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;border-bottom:2px solid var(--red);padding-bottom:6px}
+header h1{margin:0;font-size:24px}
+.meter{display:inline-flex;gap:3px;align-items:center}
+.pip{width:12px;height:12px;border:1.5px solid var(--paper);display:inline-block}
+.pip.on{background:var(--red)} .pip.g.on{background:var(--law)}
+.tag{color:var(--mute)}
+#boardwrap{position:relative;background:var(--dusk);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);min-height:330px;overflow:hidden}
+#board{position:relative;width:100%;aspect-ratio:64/15;min-height:300px}
+#board svg{position:absolute;inset:0;width:100%;height:100%}
+.zone{position:absolute;transform:translate(-50%,-50%);min-width:104px;max-width:132px;padding:4px 6px;background:#1b1622ee;border:1.5px solid var(--paper);font-size:11.5px;line-height:1.25;text-align:center}
+.zone .zn{font-size:10.5px;letter-spacing:.06em;color:var(--snow)}
+.zone .who{font-size:13px;min-height:16px;letter-spacing:.12em}
+.zone.town{border-style:dashed}
+.zone.cold{border-color:var(--snow);background:#22303aee}
+.zone.closed{opacity:.45}
+.zone.me{outline:3px solid var(--red2)}
+.zone.seen{box-shadow:0 0 0 3px var(--amber)}
+.zone.last{box-shadow:0 0 0 2px var(--amber) inset}
+.zone.blip .zn::after{content:" ~";color:var(--amber)}
+.zone.trap .zn::before{content:"✕ ";color:var(--red2)}
+.zone.target{outline:2px dashed var(--red2)}
+.zone.ground{background:#3a2c48ee;border-color:var(--amber)}
+.w{color:var(--red2);font-weight:bold} .l{color:var(--law)} .c{color:var(--amber)} .x{color:#b48ad8}
+#side{display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel{background:#1b1622;border:1.5px solid var(--paper);padding:8px 10px}
+.panel h3{margin:0 0 4px;font-size:13px;letter-spacing:.1em;color:var(--red2);text-transform:uppercase}
+#prompt{font-size:15px}
+#opts{display:flex;flex-direction:column;gap:4px;max-height:52vh;overflow:auto}
+.opt{display:grid;grid-template-columns:24px 1fr;gap:6px;text-align:left;padding:5px 7px;background:#211a2a;border:1px solid #5d5068}
+.opt .k{color:var(--red2)}
+.panel:has(#opts:empty){display:none}
+.verb{font-size:11px;letter-spacing:.14em;color:var(--mute);border-bottom:1px solid #5d5068;margin:6px 0 1px;text-transform:uppercase} .opt .cost{color:var(--amber);font-size:12px} .opt .why{color:var(--mute);font-size:12px}
+.opt:hover,.opt:focus{background:var(--dusk2);border-color:var(--red2)}
+#log{grid-column:1;max-height:42vh;overflow:auto;font-size:12.5px;background:#0f0d12;border:1.5px solid var(--ink);padding:8px 10px}
+#log div{border-bottom:1px dotted #2b2430;padding:1px 0}
+#log .new{color:var(--paper)} #log .old{color:var(--mute)} #log .sys{color:var(--red2)}
+#stats{font-size:12.5px}
+#stats td{padding:0 6px 0 0}
+.overlay{position:fixed;inset:0;background:var(--field);display:none;align-items:center;justify-content:center;z-index:9;padding:16px}
+.overlay.on{display:flex}
+.card{max-width:640px;width:100%;background:var(--dusk);border:2px solid var(--paper);box-shadow:6px 6px 0 var(--red);padding:20px}
+.card h1{margin:.1em 0 .3em;font-size:34px}
+.card p{margin:.4em 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:.6em 0}
+.row label{display:flex;gap:6px;align-items:center}
+select,input{font:inherit;background:var(--field);color:var(--paper);border:1.5px solid var(--paper);padding:3px 6px}
+#pass .card{text-align:center}
+.small{font-size:12px;color:var(--mute)}
+#view{display:none}
+</style>
+</head>
+<body>
+<div id="title" class="overlay on"><div class="card">
+  <h1>COLD SUNSET</h1>
+  <p>Sweetwater, Kentucky. One man in the woods. Everybody else is the Law.</p>
+  <p class="small">An asymmetric hide-and-hunt. The Walker wins by holding the Cold Zone clean (with the expansion, also by THE TRUTH: the Colonel's three files and one conversation). The Law wins when the net closes, or the Chief gets his face-off. The Colonel walks on his own.</p>
+  <div class="row">
+    <button data-mode="walker">[1] play THE WALKER vs CPU</button>
+    <button data-mode="law">[2] play THE LAW vs CPU</button>
+    <button data-mode="hot">[3] HOT-SEAT (pass the screen)</button>
+    <button data-mode="watch">[4] WATCH CPU vs CPU</button>
+  </div>
+  <div class="row">
+    <label>players <select id="optPlayers"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></label>
+    <label><input type="checkbox" id="optX"> the expansion (WE'RE HERE TO HELP)</label>
+    <label>rules <select id="optRules"><option value="TUNED">TUNED (house)</option><option value="AS_WRITTEN">AS WRITTEN</option><option value="CORE10">CORE 10 (stranger table)</option></select></label>
+    <label>seed <input id="optSeed" size="7"></label>
+  </div>
+  <p class="small">Keys: 1–9 / a–z pick an action · Enter = continue · Esc = this screen. 7 players needs the expansion (Mr. Heller takes the 7th seat).</p>
+</div></div>
+<div id="pass" class="overlay"><div class="card">
+  <h1 id="passTo">PASS</h1>
+  <p id="passWho"></p>
+  <p class="small">The board is hidden. Hand the screen over, then press Enter.</p>
+  <button id="passGo">I'm ready [Enter]</button>
+</div></div>
+<div id="app">
+  <header>
+    <h1>COLD SUNSET</h1>
+    <span id="hdrRound"></span>
+    <span>SPIRAL <span id="mSpiral" class="meter"></span></span>
+    <span>GUARD <span id="mGuard" class="meter"></span></span>
+    <span id="hdrRisk" class="tag"></span>
+    <span id="hdrSeat" class="tag"></span>
+  </header>
+  <div>
+    <div id="boardwrap"><div id="board"></div></div>
+  </div>
+  <div id="side">
+    <div class="panel"><h3 id="promptHead">your move</h3><div id="prompt"></div></div>
+    <div class="panel"><div id="opts"></div></div>
+    <div class="panel"><h3>the sheet</h3><div id="stats"></div></div>
+  </div>
+  <div id="log"></div>
+</div>
+<pre id="view"></pre>
+<script type="module">
+import { Game, WalkerBot, LawBot, ZONES, ZONE, ADJ, ENDINGS, GROUND, seatPlan, TUNED, AS_WRITTEN } from "./engine/cold_sunset.mjs";
+const $ = (id) => document.getElementById(id);
+const Q = new URLSearchParams(location.search);
+const KEYS = "123456789abcdefghijklmnopqrstuvwxyz";
+let G = null, MODE = null, HUMAN = [], WB = null, LB = null, lastSeat = null, lastSideShown = null, seenLog = { walker: 0, law: 0, all: 0 }, passOn = false, busy = false;
+const FAST = Q.get("fast") === "1";
+const sideOf = (seat) => G.seats[seat].side;
+window.__n = 0; window.__result = null; window.__pass = null; window.__ctx = null;
+
+function start(mode) {
+  const players = +($("optPlayers").value || 2), x = $("optX").checked || players >= 7, rules = $("optRules").value, seed = +($("optSeed").value || (Date.now() % 100000));
+  MODE = mode; G = new Game({ seed, players, expansion: x, rules });
+  WB = new WalkerBot(seed); LB = new LawBot(seed);
+  HUMAN = G.seats.map((s, i) => mode === "hot" ? true : mode === "watch" ? false : mode === "walker" ? s.side === "walker" : s.side === "law");
+  lastSeat = null; lastSideShown = null; seenLog = { walker: 0, law: 0, all: 0 };
+  $("title").classList.remove("on");
+  const u = new URL(location.href); u.searchParams.set("seat", mode); u.searchParams.set("players", players); u.searchParams.set("x", x ? 1 : 0); u.searchParams.set("rules", rules); u.searchParams.set("seed", seed); history.replaceState(null, "", u);
+  step();
+}
+// whose eyes are on the screen right now
+function viewer(p) {
+  if (MODE === "watch") return "all";
+  if (MODE === "walker") return "walker";
+  if (MODE === "law") return "law";
+  return p ? sideOf(p.seat) : (lastSideShown || "walker");
+}
+function step() {
+  if (busy) return;
+  const p = G.pending();
+  if (!p) { render(null); window.__result = G.ended ? { ending: G.ended.key, title: G.ended.title, round: G.ended.round, winner: G.ended.winner } : null; return; }
+  const human = HUMAN[p.seat];
+  if (!human) { // CPU seat
+    render(p, true);
+    busy = true;
+    setTimeout(() => { busy = false; const side = G.figs[p.fig].side === "walker" ? "walker" : "law"; G.choose(side === "walker" ? WB.decide(G, p) : LB.decide(G, p)); step(); }, FAST ? 0 : (MODE === "watch" ? 140 : 60));
+    return;
+  }
+  // hot-seat: the screen goes blank between seats whose side differs (or any seat change)
+  if (MODE === "hot" && lastSeat !== null && lastSeat !== p.seat && !passOn) { showPass(p); return; }
+  if (MODE === "hot" && lastSeat === null && !passOn && G.seats.length > 1) { showPass(p); return; }
+  lastSeat = p.seat; lastSideShown = sideOf(p.seat);
+  render(p, false);
+}
+function showPass(p) {
+  passOn = true; window.__pass = { seat: p.seat, side: sideOf(p.seat) };
+  const s = G.seats[p.seat];
+  $("passTo").textContent = s.side === "walker" ? "PASS TO THE WALKER" : `PASS TO THE LAW${G.seats.filter(x => x.side === "law").length > 1 ? ` — SEAT ${p.seat}` : ""}`;
+  $("passWho").textContent = s.side === "walker" ? "Only the Walker looks." : `${s.roles.map(r => G.figs[r] ? G.figs[r].name : r).join(", ")}. Nobody else looks.`;
+  // blank everything behind it
+  $("board").innerHTML = ""; $("opts").innerHTML = ""; $("prompt").textContent = ""; $("log").innerHTML = ""; $("stats").innerHTML = ""; $("view").textContent = "";
+  $("pass").classList.add("on");
+}
+function passGo() { if (!passOn) return; passOn = false; window.__pass = null; $("pass").classList.remove("on"); const p = G.pending(); if (p) { lastSeat = p.seat; lastSideShown = sideOf(p.seat); } render(p, false); }
+$("passGo").onclick = passGo;
+
+function pips(n, max, cls = "") { return Array.from({ length: max }, (_, i) => `<span class="pip ${cls} ${i < n ? "on" : ""}"></span>`).join("") + ` <b>${n}</b>/${max}`; }
+function render(p, cpuTurn) {
+  const side = viewer(p), v = G.view(side);
+  $("hdrRound").textContent = `ROUND ${v.round}`;
+  $("mSpiral").innerHTML = pips(v.spiral, G.K.spiralMax); $("mGuard").innerHTML = pips(v.guard, G.K.guardMax, "g");
+  $("hdrRisk").textContent = `risk ${v.risk || "-"}${v.trapsLive ? " · TRAPS LIVE" : ""}${v.expansion ? ` · weather ${["", "BLACK ICE", "WHITEOUT", "FROZEN NERVE", "TRAP SURGE", "FROSTBITE", "STILL COLD"][v.weather] || "-"}` : ""}${v.coldOpen ? " · COLD ZONE OPEN" : ""} · ${v.rules}`;
+  $("hdrSeat").textContent = MODE === "watch" ? "watching (everything shown)" : `you see: ${side === "walker" ? "THE WALKER's eyes" : "THE LAW's eyes"}`;
+  drawBoard(v, side, p);
+  // the prompt + options
+  const opts = $("opts"); opts.innerHTML = "";
+  if (G.ended) {
+    const e = G.ended;
+    $("promptHead").textContent = "it's over";
+    $("prompt").innerHTML = `<div class="brush" style="font-size:20px">${e.title}</div><p>${e.line}</p><p class="small">${e.why} Round ${e.round}. Winner: <b>${e.winner}</b>.</p><button id="again">play again [Enter]</button>`;
+    $("again").onclick = () => { $("title").classList.add("on"); };
+  } else if (p && !cpuTurn) {
+    const f = G.figs[p.fig];
+    $("promptHead").textContent = p.setup ? "setup — in secret" : `${f.name} — ${f.title}`;
+    $("prompt").innerHTML = p.setup ? `Place your ${G.pendingSetup[0].kind === "trap" ? "trap" : "cache"} (${G.pendingSetup.length} left to place). The Law never sees these.` : declareText(p, f);
+    let lastVerb = null;
+    p.options.forEach((o, i) => {
+      const vb = p.setup ? null : o.act === "MOVE" ? (o.run ? "RUN — two zones, loud" : "MOVE") : o.act;
+      if (vb && vb !== lastVerb) { const d = document.createElement("div"); d.className = "verb"; d.textContent = vb; opts.appendChild(d); lastVerb = vb; }
+      const b = document.createElement("button"); b.className = "opt"; b.dataset.id = o.id;
+      b.innerHTML = `<span class="k">${KEYS[i] || "·"}</span><span><b>${esc(o.label)}</b><br><span class="cost">${esc(o.cost || "")}</span>${o.why ? `<br><span class="why">${esc(o.why)}</span>` : ""}</span>`;
+      b.onclick = () => pick(o.id); opts.appendChild(b);
+      b.onmouseenter = () => { document.querySelectorAll(".zone.target").forEach(z => z.classList.remove("target")); const z = o.to || o.zone || (o.target && G.figs[o.target].zone); if (z) document.querySelector(`.zone[data-z="${z}"]`)?.classList.add("target"); };
+    });
+  } else if (p) {
+    $("promptHead").textContent = "the CPU is thinking";
+    $("prompt").textContent = sideOf(p.seat) === side || side === "all" ? `${G.figs[p.fig].name} is deciding…` : "the other side is deciding…";
+  }
+  // the sheet
+  const w = v.figs.find(f => f.id === "walker");
+  const rows = v.figs.filter(f => f.id !== "walker").map(f => `<tr><td class="${f.side === "law" ? "l" : f.side === "colonel" ? "c" : "x"}">${f.glyph}</td><td>${f.name}</td><td>${f.alive ? `HP ${f.hp}/${f.maxHp}` : "DEAD"}${f.away ? " · away" : ""}${f.skip ? " · loses an action" : ""}${f.desperate ? " · DESPERATE" : ""}${f.files ? ` · files ${f.files}/3` : ""}</td></tr>`).join("");
+  const clean = w.weapon === "TOOL" && w.zen >= G.K.cleanZen && w.psyche <= G.K.cleanPsyche;
+  $("stats").innerHTML = `<table><tr><td class="w">W</td><td>ROOK</td><td>HP ${w.hp}/${w.maxHp} · Rage ${w.rage} · Zen ${w.zen} · Psyche ${w.psyche} · ${w.weapon === "RIFLE" ? "RIFLE" : "E-tool"}${w.hold ? ` · HOLD ${w.hold}/${G.K.holdRounds}` : ""}</td></tr>${rows}</table>
+    <p class="small">Clean (for the Cold Zone): empty hands ${w.weapon === "TOOL" ? "✓" : "✗"} · Zen ≥ ${G.K.cleanZen} ${w.zen >= G.K.cleanZen ? "✓" : "✗"} · Psyche ≤ ${G.K.cleanPsyche} ${w.psyche <= G.K.cleanPsyche ? "✓" : "✗"} — ${clean ? "<b class='w'>CLEAN</b>" : "not clean"}. Rage ${G.K.killRage} = kill logic.</p>
+    ${side !== "walker" && v.lastSeen ? `<p class="small">Last seen: <b>${ZONE[v.lastSeen.zone].name}</b>, round ${v.lastSeen.round}.${v.blips.length ? ` Blips: ${v.blips.map(b => `${ZONE[b.zone].name} (${b.why})`).join(", ")}.` : ""}</p>` : ""}
+    ${side !== "walker" && v.radioGround ? `<p class="small">The chopper: <b>${GROUND[v.radioGround.tier]}</b> at the end of round ${v.radioGround.round}${v.round - v.radioGround.round <= 1 ? " (that ground is lit on the map)" : ""}.</p>` : ""}
+    ${side !== "all" ? `<p class="small">${G.K.holdNeedsClear ? `Hold the Cold Zone ${G.K.holdRounds} rounds clean to win; a round with a hunter standing in it doesn't count.` : ""}${G.K.lawRadio === "ground" && side === "law" ? ` Radio calls left: ${Math.max(0, G.K.callOutLimit - (G.callOuts || 0))}.` : ""}</p>` : ""}`;
+  // the log: what just happened (new since this side last looked) + history
+  const L = v.log, key = side, from = Math.max(0, L.length - 160);
+  const cut = seenLog[key] || 0;
+  $("log").innerHTML = L.slice(from).map((l, i) => `<div class="${l.txt.startsWith("***") || l.txt.startsWith("—") ? "sys" : (from + i) >= cut ? "new" : "old"}">${esc(l.txt)}</div>`).join("");
+  $("log").scrollTop = 1e9;
+  if (p && !cpuTurn) seenLog[key] = L.length;
+  // headless hooks (the smoke reads these)
+  window.__n++; window.__ctx = p ? { fig: p.fig, seat: p.seat, side: sideOf(p.seat), human: !cpuTurn, options: p.options.map(o => o.id), setup: !!p.setup } : null;
+  $("view").textContent = textView(v);
+}
+function declareText(p, f) {
+  if (f.side === "walker") return `Declare in secret. You see every hunter; they see you only when you're <b>seen</b>. ${G.coldOpen() ? "<b>The Cold Zone is open.</b>" : `The Cold Zone opens at Spiral ${G.K.coldAt}.`}`;
+  return `Declare out loud. You see him only where he was <b>seen</b>; the amber ring is his last-seen zone, ~ marks noise.`;
+}
+function drawBoard(v, side, p) {
+  const board = $("board");
+  const pos = (z) => [7 + (ZONE[z].x - 2) / 56 * 86, 12 + (ZONE[z].y - 3) / 9 * 76];
+  let svg = `<svg viewBox="0 0 100 100" preserveAspectRatio="none">`;
+  const done = new Set();
+  for (const z of ZONES) for (const l of ADJ[z.id]) { const k = [z.id, l.to].sort().join(); if (done.has(k)) continue; done.add(k); const [x1, y1] = pos(z.id), [x2, y2] = pos(l.to); svg += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${l.shaft ? "#d8a24a" : "#efe6d6"}" stroke-width="0.35" ${l.shaft ? 'stroke-dasharray="1,1"' : ""} vector-effect="non-scaling-stroke"/>`; }
+  svg += `</svg>`;
+  let html = svg;
+  const me = p && G.figs[p.fig] ? G.figs[p.fig].zone : null;
+  for (const z of ZONES) {
+    const [x, y] = pos(z.id);
+    const here = v.figs.filter(f => f.zone === z.id && f.alive);
+    const who = here.map(f => `<span class="${f.id === "walker" ? "w" : f.side === "law" ? "l" : f.side === "colonel" ? "c" : "x"}">${f.glyph}</span>`).join("");
+    const cls = ["zone", z.tier === "TOWN" ? "town" : "", z.id === "COLD" ? "cold" : "", z.id === "COLD" && !v.coldOpen ? "closed" : "", me === z.id && !G.ended ? "me" : "",
+      side !== "walker" && v.lastSeen && v.lastSeen.zone === z.id ? (v.figs.find(f => f.id === "walker").zone === z.id ? "seen" : "last") : "",
+      v.blips.some(b => b.zone === z.id) ? "blip" : "", v.traps.some(t => t.zone === z.id) ? "trap" : "",
+      side === "law" && v.radioGround && v.round - v.radioGround.round <= 1 && z.tier === v.radioGround.tier ? "ground" : ""].join(" ");
+    const extra = [side === "walker" || side === "all" ? (v.caches.find(c => c.zone === z.id && !c.used) ? "cache" : "") : "", v.rifles.includes(z.id) ? "rifle" : "", v.anchor === z.id ? "anchored" : ""].filter(Boolean).join(" · ");
+    html += `<div class="${cls}" data-z="${z.id}" style="left:${x}%;top:${y}%"><div class="zn">${z.name}</div><div class="who">${who || "&nbsp;"}</div>${extra ? `<div class="small">${extra}</div>` : ""}</div>`;
+  }
+  board.innerHTML = html;
+}
+function textView(v) { // a plain-text board for the smoke (what is on screen, as text)
+  return ZONES.map(z => `[${z.id}:${v.figs.filter(f => f.zone === z.id && f.alive).map(f => f.glyph).join("")}]`).join(" ");
+}
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+function pick(id) { if (passOn || busy) return; const p = G.pending(); if (!p || !HUMAN[p.seat]) return; G.choose(id); step(); }
+window.__choose = pick;
+window.__G = () => G;
+document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => start(b.dataset.mode));
+addEventListener("keydown", (e) => {
+  if ($("title").classList.contains("on")) { const m = { "1": "walker", "2": "law", "3": "hot", "4": "watch" }[e.key]; if (m) start(m); return; }
+  if (e.key === "Escape") { $("title").classList.add("on"); return; }
+  if (passOn) { if (e.key === "Enter" || e.key === " ") passGo(); return; }
+  if (G && G.ended && e.key === "Enter") { $("title").classList.add("on"); return; }
+  const p = G && G.pending(); if (!p || !HUMAN[p.seat]) return;
+  const i = KEYS.indexOf(e.key.toLowerCase()); if (i >= 0 && p.options[i]) pick(p.options[i].id);
+});
+// URL presets: ?seat=walker|law|hot|watch&players=&x=1&rules=&seed=
+if (Q.get("players")) $("optPlayers").value = Q.get("players");
+if (Q.get("x") === "1") $("optX").checked = true;
+if (Q.get("rules")) $("optRules").value = Q.get("rules");
+$("optSeed").value = Q.get("seed") || "";
+if (Q.get("seat")) start(Q.get("seat"));
+</script>
+<footer style="margin:24px 0 12px;text-align:center;font-size:12px;opacity:.7">Created by Joseph Coleman, Claude, ChatGPT, and Blender · Castle Killscreen · Anders &amp; Partners</footer>
+</body>
+</html>
