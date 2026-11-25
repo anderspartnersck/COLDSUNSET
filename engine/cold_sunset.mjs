@@ -44,7 +44,8 @@ export const AS_WRITTEN = {
   sisterMove: "d6",       // "d6" = 1d6 zones toward the Walker (as written); a number = fixed steps
   sisterHidden: "COLD",   // where she heads when the Walker is hidden: "COLD" (as written) | "LASTSEEN"
   sisterTalksAdjacent: false, // as written: REACH HIM auto-triggers only when she ENTERS the Walker's zone
-  clockEvery: 0,           // 0 = no Spiral clock (as written); N = Spiral +1 every N rounds in PRESSURE
+  clockEvery: 3,           // the Spiral clock: Spiral +1 every N rounds in PRESSURE (0 = none). 1124 Order 45 (Joe: GO): every 3rd
+                           // round the Spiral advances by itself; the source reading had none (0): AS_WRITTEN_PRE45 below
   guardClockEvery: 0,      // 0 = no Guard clock; N = Guard +1 every N rounds
   townSightGuard: 1,       // Guard +1 when the Walker is sighted in a TOWN zone ("public escalation")
   allDeputies: false,      // false = as written: in a 3+ player game only the deputies players chose are on the board
@@ -52,7 +53,7 @@ export const AS_WRITTEN = {
   roundCap: 40,            // stall cap (a game that reaches it ends STALL — the laws say it must not happen)
   dogSteps: 2,
   callOutSpiral: 1,        // a Law CALL OUT (radio the state) costs Spiral +1
-  callOutLimit: 0,         // how many times a game the Law may radio the state (0 = no limit, as written)
+  callOutLimit: 1,         // how many times a game the Law may radio the state. 1125 Joe: ONCE (the source had no limit, 0: a strong Law spammed it, Walker 2.6%)
   psychePlusAt: 7,         // expansion: Psyche+ replaces Trauma at this Spiral (as written: 7)
   // expansion
   hellerZenReset: "reset", // "reset" = all Zen to 0 at end of each round (as written); "sighted" = -1 only on rounds he's sighted
@@ -134,7 +135,9 @@ export const CORE10 = {
   caches: 0, rifle: false, sheriffKit: false, walkerAura: false, bravery: false, shafts: false,
   deputyKit: ["pruitt", "tolley"],
 };
-export const PRESETS = { AS_WRITTEN, TUNED, CORE10 };
+// AS_WRITTEN_PRE45: the source reading before Order 45 (no Spiral clock). Same game, seed for seed, as AS_WRITTEN was at 7351a4d.
+export const AS_WRITTEN_PRE45 = { ...AS_WRITTEN, name: "AS WRITTEN (pre-45)", clockEvery: 0, callOutLimit: 0 };
+export const PRESETS = { AS_WRITTEN, TUNED, CORE10, AS_WRITTEN_PRE45 };
 
 // ---------------- THE BOARD: the Spiral Grid (14 zones + the Cold Zone) ----------------
 // Tallow Gap, Merritt County, Tennessee, up onto the Cumberland Plateau: town → the creek → the bluffs → the bald → the old mine → the sink → out.
