@@ -92,6 +92,9 @@ export const AS_WRITTEN = {
   bravery: true,           // LEGENDARY BRAVERY (once a game, up at 1 HP)
   rifle: true,             // the rifle at the hunter's camp (and dead deputies' rifles)
   shafts: true,            // the mineshaft hazard roll
+  // 1127 order 102 (docs/SYSTEMS-AUDIT-1126.md §4): switches that start OFF. All OFF = the game as it was, seed for seed.
+  fogSheet: false,         // P1: true = view("law") omits the Walker's sheet (rage, zen, psyche, hold, weapon) and the rifle list (the kit's screen)
+  endNeedsHold: "off",     // P2: Spiral 10, clean in the Cold Zone: "off" = wins (today) · "clear" = only with no hunter standing in it · "held" = clear AND the hold was at 1+ before this Collapse
 };
 export const TUNED = {
   ...AS_WRITTEN, name: "TUNED",
@@ -808,6 +811,7 @@ export class Game {
       if (K.hellerZenReset === "reset") w.zen = 0; else if (w.seenRound === this.round && !(K.hellerColdFree && w.zone === "COLD")) w.zen = Math.max(0, w.zen - 1);
     }
     // the Cold Zone hold
+    this.holdBefore = w.hold;
     const intruder = K.holdNeedsClear && this.hunters().some(h => h.zone === "COLD" && h.role !== "dog");
     if (w.zone === "COLD" && this.clean() && intruder) { if (w.hold) this.say(`A hunter is standing in the Cold Zone: the hold doesn't count this round.`, "all"); }
     else if (w.zone === "COLD" && this.clean()) { w.hold++; this.say(`He holds the Cold Zone clean: ${w.hold}/${K.holdRounds}.`, "all"); }
@@ -861,15 +865,23 @@ export class Game {
     return false;
   }
   // Spiral 10: the ending is chosen (our order — docs/DESIGN.md §Spiral 10)
+  endClean() { // P2 (K.endNeedsHold): may "clean in the Cold Zone" end it at Spiral 10?
+    const w = this.W(), m = this.K.endNeedsHold;
+    if (!(w.zone === "COLD" && this.clean())) return false;
+    if (!m || m === "off") return true;
+    if (this.hunters().some(h => h.zone === "COLD" && h.role !== "dog")) return false;
+    if (m === "held") return (this.phase === "collapse" ? (this.holdBefore || 0) : w.hold) >= 1;
+    return true;
+  }
   forced() {
     const w = this.W(), c = this.figs.sister, ch = this.figs.sheriff, h = this.figs.heller;
     this.say(`THE SPIRAL HITS ${this.K.spiralMax}. The ending is chosen.`, "all");
-    if (this.K.cleanBeatsOverride && w.zone === "COLD" && this.clean()) return this.end("CLEAN_EVASION", "He was in the Cold Zone, clean, when it all came down. No paperwork reaches that far.");
+    if (this.K.cleanBeatsOverride && this.endClean()) return this.end("CLEAN_EVASION", "He was in the Cold Zone, clean, when it all came down. No paperwork reaches that far.");
     if (this.expansion && this.K.overrideAt10 && h && h.alive && h.finalOverride && (!this.K.overrideNeedsSight || w.seenRound >= this.round - 1)) {
       if (w.zone === "COLD" && w.weapon === "TOOL") return this.end("DISAPPEARED", "Mr. Heller played FINAL OVERRIDE.");
       return this.end("OVERRIDE_CAUGHT", "Mr. Heller played FINAL OVERRIDE.");
     }
-    if (w.zone === "COLD" && this.clean()) return this.end("CLEAN_EVASION", "He was in the Cold Zone, clean, when it all came down.");
+    if (this.endClean()) return this.end("CLEAN_EVASION", "He was in the Cold Zone, clean, when it all came down.");
     if (c.alive && c.zone && dist(c.zone, w.zone) <= 1) { this.engaged = false; this.reachHim("the end of it"); if (this.ended) return; }
     if (ch.alive && this.K.faceoff !== false) {
       ch.zone = w.zone; this.showdown(ch); if (this.ended) return;
@@ -891,6 +903,7 @@ export class Game {
       if (f.id === "walker") {
         Object.assign(pub, { rage: f.rage, zen: f.zen, psyche: f.psyche, hold: f.hold, kits: seeAll ? f.kits : undefined });
         if (!seeAll) { pub.zone = w.seenRound === this.round ? w.zone : null; pub.lastSeen = this.lastSeen; }
+        if (!seeAll && this.K.fogSheet) for (const k of ["rage", "zen", "psyche", "hold", "weapon"]) delete pub[k]; // P1: behind his screen (HP stays public)
       }
       if (f.id === "sister") pub.files = f.files;
       return pub;
@@ -900,7 +913,7 @@ export class Game {
       expansion: this.expansion, rules: this.K.name, K: this.K, figs, lastSeen: this.lastSeen, radioGround: this.radioGround || null,
       blips: side === "walker" ? [] : this.blips.filter(b => b.round >= this.round - 1),
       traps: this.traps.filter(t => seeAll ? true : t.known).map(t => ({ zone: t.zone, owner: t.owner, kind: seeAll || t.known ? t.kind : "?" })),
-      caches: seeAll ? this.caches : [], rifles: this.rifles, anchor: this.anchor,
+      caches: seeAll ? this.caches : [], rifles: seeAll || !this.K.fogSheet ? this.rifles : undefined, anchor: this.anchor,
       log: this.log.filter(l => l.vis === "all" || l.vis === side || side === "all" || this.ended),
       ended: this.ended,
     };
