@@ -128,7 +128,7 @@ select,input{font:inherit;background:var(--field);color:var(--paper);border:1.5p
 </div>
 <pre id="view"></pre>
 <script type="module">
-import { Game, WalkerBot, LawBot, ZONES, ZONE, ADJ, ENDINGS, GROUND, seatPlan, TUNED, AS_WRITTEN } from "./engine/cold_sunset.mjs";
+import { Game, WalkerBot, LawBot, ZONES, ZONE, ADJ, ENDINGS, GROUND, seatPlan, TUNED, AS_WRITTEN, PRESETS } from "./engine/cold_sunset.mjs";
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
 const KEYS = "123456789abcdefghijklmnopqrstuvwxyz";
@@ -139,7 +139,7 @@ window.__n = 0; window.__result = null; window.__pass = null; window.__ctx = nul
 
 function start(mode) {
   const players = +($("optPlayers").value || 2), x = $("optX").checked || players >= 7, rules = $("optRules").value, seed = +($("optSeed").value || (Date.now() % 100000));
-  MODE = mode; G = new Game({ seed, players, expansion: x, rules });
+  MODE = mode; G = new Game({ seed, players, expansion: x, rules, knobs: Q.get("hideSheet") === "1" ? { ...(PRESETS[rules] || TUNED), fogSheet: true } : null }); // ?hideSheet=1: the engine's K.fogSheet (Order 102 P1; page wiring from Order 81). Absent = exactly as before.
   WB = new WalkerBot(seed); LB = new LawBot(seed);
   HUMAN = G.seats.map((s, i) => mode === "hot" ? true : mode === "watch" ? false : mode === "walker" ? s.side === "walker" : s.side === "law");
   lastSeat = null; lastSideShown = null; seenLog = { walker: 0, law: 0, all: 0 };
@@ -219,8 +219,10 @@ function render(p, cpuTurn) {
   const w = v.figs.find(f => f.id === "walker");
   const rows = v.figs.filter(f => f.id !== "walker").map(f => `<tr><td class="${f.side === "law" ? "l" : f.side === "sister" ? "c" : "x"}">${f.glyph}</td><td>${f.name}</td><td>${f.alive ? `HP ${f.hp}/${f.maxHp}` : "DEAD"}${f.away ? " · away" : ""}${f.skip ? " · loses an action" : ""}${f.desperate ? " · DESPERATE" : ""}${f.files ? ` · files ${f.files}/3` : ""}</td></tr>`).join("");
   const clean = w.weapon === "TOOL" && w.zen >= G.K.cleanZen && w.psyche <= G.K.cleanPsyche;
-  $("stats").innerHTML = `<table><tr><td class="w">W</td><td>ROOK</td><td>HP ${w.hp}/${w.maxHp} · Rage ${w.rage} · Zen ${w.zen} · Psyche ${w.psyche} · ${w.weapon === "RIFLE" ? "RIFLE" : "E-tool"}${w.hold ? ` · HOLD ${w.hold}/${G.K.holdRounds}` : ""}</td></tr>${rows}</table>
-    <p class="small">Clean (for the Cold Zone): empty hands ${w.weapon === "TOOL" ? "✓" : "✗"} · Zen ≥ ${G.K.cleanZen} ${w.zen >= G.K.cleanZen ? "✓" : "✗"} · Psyche ≤ ${G.K.cleanPsyche} ${w.psyche <= G.K.cleanPsyche ? "✓" : "✗"} — ${clean ? "<b class='w'>CLEAN</b>" : "not clean"}. Rage ${G.K.killRage} = kill logic.</p>
+  const sheetHidden = side !== "walker" && w.zen === undefined; // K.fogSheet: the Law's view has no Walker sheet (HP stays public)
+  $("stats").innerHTML = (sheetHidden ? `<table><tr><td class="w">W</td><td>ROOK</td><td>HP ${w.hp}/${w.maxHp} · behind his screen (Rage ? · Zen ? · Psyche ? · hands ?)</td></tr>${rows}</table>
+    <p class="small">Clean (for the Cold Zone): empty hands · Zen ≥ ${G.K.cleanZen} · Psyche ≤ ${G.K.cleanPsyche}. Only he knows. Rage ${G.K.killRage} = kill logic.</p>` : `<table><tr><td class="w">W</td><td>ROOK</td><td>HP ${w.hp}/${w.maxHp} · Rage ${w.rage} · Zen ${w.zen} · Psyche ${w.psyche} · ${w.weapon === "RIFLE" ? "RIFLE" : "E-tool"}${w.hold ? ` · HOLD ${w.hold}/${G.K.holdRounds}` : ""}</td></tr>${rows}</table>
+    <p class="small">Clean (for the Cold Zone): empty hands ${w.weapon === "TOOL" ? "✓" : "✗"} · Zen ≥ ${G.K.cleanZen} ${w.zen >= G.K.cleanZen ? "✓" : "✗"} · Psyche ≤ ${G.K.cleanPsyche} ${w.psyche <= G.K.cleanPsyche ? "✓" : "✗"} — ${clean ? "<b class='w'>CLEAN</b>" : "not clean"}. Rage ${G.K.killRage} = kill logic.</p>`) + `
     ${side !== "walker" && v.lastSeen ? `<p class="small">Last seen: <b>${ZONE[v.lastSeen.zone].name}</b>, round ${v.lastSeen.round}.${v.blips.length ? ` Blips: ${v.blips.map(b => `${ZONE[b.zone].name} (${b.why})`).join(", ")}.` : ""}</p>` : ""}
     ${side !== "walker" && v.radioGround ? `<p class="small">The chopper: <b>${GROUND[v.radioGround.tier]}</b> at the end of round ${v.radioGround.round}${v.round - v.radioGround.round <= 1 ? " (that ground is lit on the map)" : ""}.</p>` : ""}
     ${side !== "all" ? `<p class="small">${G.K.holdNeedsClear ? `Hold the Cold Zone ${G.K.holdRounds} rounds clean to win; a round with a hunter standing in it doesn't count.` : ""}${G.K.lawRadio === "ground" && side === "law" ? ` Radio calls left: ${Math.max(0, G.K.callOutLimit - (G.callOuts || 0))}.` : ""}</p>` : ""}`;
@@ -255,7 +257,7 @@ function drawBoard(v, side, p) {
       side !== "walker" && v.lastSeen && v.lastSeen.zone === z.id ? (v.figs.find(f => f.id === "walker").zone === z.id ? "seen" : "last") : "",
       v.blips.some(b => b.zone === z.id) ? "blip" : "", v.traps.some(t => t.zone === z.id) ? "trap" : "",
       side === "law" && v.radioGround && v.round - v.radioGround.round <= 1 && z.tier === v.radioGround.tier ? "ground" : ""].join(" ");
-    const extra = [side === "walker" || side === "all" ? (v.caches.find(c => c.zone === z.id && !c.used) ? "cache" : "") : "", v.rifles.includes(z.id) ? "rifle" : "", v.anchor === z.id ? "anchored" : ""].filter(Boolean).join(" · ");
+    const extra = [side === "walker" || side === "all" ? (v.caches.find(c => c.zone === z.id && !c.used) ? "cache" : "") : "", (v.rifles || []).includes(z.id) ? "rifle" : "", v.anchor === z.id ? "anchored" : ""].filter(Boolean).join(" · ");
     html += `<div class="${cls}" data-z="${z.id}" style="left:${x}%;top:${y}%"><div class="zn">${z.name}</div><div class="who">${who || "&nbsp;"}</div>${extra ? `<div class="small">${extra}</div>` : ""}</div>`;
   }
   board.innerHTML = html;
