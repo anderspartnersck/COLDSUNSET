@@ -213,30 +213,30 @@ export const ENDINGS = {
 
 // ---------------- DECKS ----------------
 const TRAUMA = [
-  ...Array(4).fill({ k: "PSYCHE", t: "SMALL ROOMS", d: "Psyche +1." }),
-  ...Array(2).fill({ k: "RAGE", t: "HANDS ON HIM", d: "Rage +1." }),
-  ...Array(2).fill({ k: "ZEN", t: "THE NAMES", d: "Zen −1." }),
-  ...Array(2).fill({ k: "FLASH", t: "LOST TIME", d: "Lose your next action." }),
-  { k: "HEAL", t: "LIVING ROUGH", d: "+1 HP (counts against the 3-HP heal cap)." },
-  { k: "NONE", t: "STAY UPRIGHT", d: "You don't recover. You stay upright. No effect." },
+  ...Array(4).fill({ k: "PSYCHE", t: "SMALL ROOMS", d: "When you draw this, raise your PSYCHE by 1." }),
+  ...Array(2).fill({ k: "RAGE", t: "HANDS ON HIM", d: "When you draw this, raise your RAGE by 1." }),
+  ...Array(2).fill({ k: "ZEN", t: "THE NAMES", d: "When you draw this, lower your ZEN by 1 (not below 0)." }),
+  ...Array(2).fill({ k: "FLASH", t: "LOST TIME", d: "When you draw this, lose your next action." }),
+  { k: "HEAL", t: "LIVING ROUGH", d: "When you draw this, heal 1 HP, unless you are at full HP or have already healed 3 HP this game." },
+  { k: "NONE", t: "STAY UPRIGHT", d: "When you draw this, nothing else happens.", f: "You don't recover. You stay upright." },
 ];
 const PSYCHE_PLUS = [
-  ...Array(3).fill({ k: "PSYCHE2", t: "MEMORY COLLAPSE", d: "Psyche +2." }),
-  ...Array(3).fill({ k: "ECHO", t: "ECHO TRAUMA", d: "Psyche +1 and Rage +1." }),
-  ...Array(3).fill({ k: "FLASH", t: "TURN RECURSION", d: "Lose your next action." }),
-  ...Array(3).fill({ k: "ZEN2", t: "IDENTITY CONFUSION", d: "Zen −2." }),
-  ...Array(3).fill({ k: "ZENUP", t: "STILLNESS", d: "Zen +1." }),
+  ...Array(3).fill({ k: "PSYCHE2", t: "MEMORY COLLAPSE", d: "When you draw this, raise your PSYCHE by 2." }),
+  ...Array(3).fill({ k: "ECHO", t: "ECHO TRAUMA", d: "When you draw this, raise your PSYCHE by 1. Raise your RAGE by 1." }),
+  ...Array(3).fill({ k: "FLASH", t: "TURN RECURSION", d: "When you draw this, lose your next action." }),
+  ...Array(3).fill({ k: "ZEN2", t: "IDENTITY CONFUSION", d: "When you draw this, lower your ZEN by 2 (not below 0)." }),
+  ...Array(3).fill({ k: "ZENUP", t: "STILLNESS", d: "When you draw this, raise your ZEN by 1." }),
 ];
 const NIGHTMARE = [
-  ...Array(3).fill({ k: "SEIZE", t: "SEIZED", d: "Heller takes one deputy's action this round." }),
-  ...Array(3).fill({ k: "NOAURA", t: "AURAS CANCELLED", d: "No auras this round (both sides)." }),
-  ...Array(3).fill({ k: "CONFLICT", t: "CONFLICTING ORDERS", d: "Two deputies lose their next action." }),
-  ...Array(2).fill({ k: "REASSIGN", t: "REASSIGNED", d: "A deputy leaves the board for 2 rounds." }),
-  { k: "SILENCE", t: "SILENCED", d: "A deputy is removed for good. A betrayal is witnessed: Spiral +1." },
-  ...Array(2).fill({ k: "FALSIFY", t: "FALSIFIED DROP", d: "The Walker's next cache is poisoned: Psyche +1 instead of the heal." }),
-  ...Array(2).fill({ k: "LEAK", t: "PRESS LEAK", d: "Guard +1." }),
-  ...Array(2).fill({ k: "JURIS", t: "JURISDICTION FIGHT", d: "Guard −1, Spiral +1." }),
-  ...Array(2).fill({ k: "COVER", t: "COVER STORY", d: "Spiral +1." }),
+  ...Array(3).fill({ k: "SEIZE", t: "SEIZED", d: "When HELLER plays this, pick 1 DEPUTY at random. That DEPUTY loses their action this round." }),
+  ...Array(3).fill({ k: "NOAURA", t: "AURAS CANCELLED", d: "When HELLER plays this, ignore every AURA on both sides until the end of this round." }),
+  ...Array(3).fill({ k: "CONFLICT", t: "CONFLICTING ORDERS", d: "When HELLER plays this, pick 2 DEPUTIES at random. Each loses their next action." }),
+  ...Array(2).fill({ k: "REASSIGN", t: "REASSIGNED", d: "When HELLER plays this, pick 1 DEPUTY at random. Take them off the board until the end of next round. They return to the same zone." }),
+  { k: "SILENCE", t: "SILENCED", d: "When HELLER plays this, pick 1 DEPUTY at random and remove them for the rest of the game. Raise the SPIRAL by 1.", f: "A betrayal is witnessed." },
+  ...Array(2).fill({ k: "FALSIFY", t: "FALSIFIED DROP", d: "When HELLER plays this, the next CACHE the WALKER opens gives PSYCHE +1 instead of 1 HP." }),
+  ...Array(2).fill({ k: "LEAK", t: "PRESS LEAK", d: "When HELLER plays this, raise the GUARD by 1." }),
+  ...Array(2).fill({ k: "JURIS", t: "JURISDICTION FIGHT", d: "When HELLER plays this, lower the GUARD by 1. Raise the SPIRAL by 1." }),
+  ...Array(2).fill({ k: "COVER", t: "COVER STORY", d: "When HELLER plays this, raise the SPIRAL by 1." }),
 ];
 const REDACTED = [...Array(8).fill({ k: "FILE", t: "A FILE" }), ...Array(4).fill({ k: "BLACK", t: "BLACKED OUT" })];
 const ORDNANCE = [...Array(3).fill("SENSOR MINE"), ...Array(3).fill("TAGGED TRIPWIRE")];
